@@ -25,11 +25,25 @@
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:text="注册"
-        android:background="@drawable/register_button"
+        android:textColor="@color/register_button_text_color"
+        android:background="@drawable/register_icon_register_button"
         android:layout_below="@id/register_password_edittext"
         android:onClick="onClick_registerButton"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
         />
+    <!--  
+    <Button 
+        android:id="@+id/register_register_button"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:text="注册"
+        android:textColor="@color/register_button_text_color"
+        android:background="@drawable/register_button"
+        android:layout_below="@id/register_password_edittext"
+        android:onClick="onClick_registerButton"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        />-->
 
 </RelativeLayout>
