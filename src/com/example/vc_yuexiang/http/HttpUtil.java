@@ -14,28 +14,34 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+/**
+ * 缃戠粶璇锋眰鐨勫伐鍏风被
+ * 
+ * @author LinterChen linterchen@vanchu.net
+ * @date 2015-11-16
+ */
 public class HttpUtil {
 	/**
-	 * 服务器的ip
+	 * 缃戠粶璇锋眰鐨勫湴鍧�
 	 */
 	public static final String URL_IP = "http://192.168.1.2:8080/YueXiang";
 	private InputStream inputStream;
 	private BufferedReader reader;
 	private StringBuilder stringBuilder = new StringBuilder();
 	private String result = null;
-	
-	public String Connect(String url, List<NameValuePair> nameValuePair){
+
+	public String Connect(String url, List<NameValuePair> nameValuePair) {
 		HttpPost httpPost = new HttpPost(url);
 		HttpClient httpClient = new DefaultHttpClient();
 		try {
 			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair, "UTF-8"));
 			HttpResponse response = httpClient.execute(httpPost);
-			
+
 			HttpEntity httpEntity = response.getEntity();
 			inputStream = httpEntity.getContent();
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 			String line = null;
-			while((line = reader.readLine()) != null){				
+			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line + "\n");
 			}
 			result = stringBuilder.toString();

@@ -1,16 +1,22 @@
 package com.example.vc_yuexiang.util;
 
+/**
+ * 服务器端返回结果的工具类
+ * 
+ * @author LinterChen linterchen@vanchu.net
+ * @date 2015-11-16
+ */
 public class TypeUtil {
 	/**
-	 * ע�᣺���û��Ѵ���
+	 * 注册：用户已存在
 	 */
-	public static final int REG_USEREXIST = 0;
+	public static final int REG_USER_EXIST = 0;
 	/**
-	 * ע�᣺ע��ɹ�
+	 * 注册：注册成功
 	 */
 	public static final int REG_SUCCESS = 1;
 	/**
-	 * ע�᣺ע��ʧ��
+	 * 注册：注册失败
 	 */
 	public static final int REG_FAIL = 2;
 }

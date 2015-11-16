@@ -4,33 +4,32 @@
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
     android:gravity="center_vertical"
-    android:background="#B2DFEE" >
+    android:background="@color/register_bg_color" >
 
     <EditText 
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        />
-    <EditText 
-        android:id="@+id/register_et_username"
+        android:id="@+id/register_username_edittext"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="用户名"
         />
     <EditText 
-        android:id="@+id/register_et_pswd"
+        android:id="@+id/register_password_edittext"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="密码"
         android:inputType="textPassword"
-        android:layout_below="@id/register_et_username"
+        android:layout_below="@id/register_username_edittext"
         />
     <Button 
-        android:id="@+id/register_btn_register"
+        android:id="@+id/register_register_button"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="注册"
-        android:layout_below="@id/register_et_pswd"
+        android:background="@drawable/register_button"
+        android:layout_below="@id/register_password_edittext"
         android:onClick="onClick_registerButton"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
         />
 
 </RelativeLayout>

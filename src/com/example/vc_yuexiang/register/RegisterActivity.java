@@ -17,9 +17,15 @@ import com.example.vc_yuexiang.R;
 import com.example.vc_yuexiang.http.HttpUtil;
 import com.example.vc_yuexiang.util.TypeUtil;
 
+/**
+ * æ³¨å†ŒActivity
+ * 
+ * @author LinterChen linterchen@vanchu.net
+ * @date 2015-11-16
+ */
 public class RegisterActivity extends Activity {
-	private EditText et_username;
-	private EditText et_pswd;
+	private EditText usernameEditText;
+	private EditText passwordEditText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,37 +36,27 @@ public class RegisterActivity extends Activity {
 	}
 
 	public void initView() {
-		et_username = (EditText) findViewById(R.id.register_et_username);
-		et_pswd = (EditText) findViewById(R.id.register_et_pswd);
+		usernameEditText = (EditText) findViewById(R.id.register_username_edittext);
+		passwordEditText = (EditText) findViewById(R.id.register_password_edittext);
 	}
 
-	/**
-	 * ×¢²á°´Å¥µÄµã»÷ÊÂ¼ş
-	 * 
-	 * @param view
-	 */
 	public void onClick_registerButton(View view) {
-		String username = et_username.getText().toString().trim();
-		String pswd = et_pswd.getText().toString().trim();
-		if (isCorrectOfInput(username, pswd)) {
+		String username = usernameEditText.getText().toString().trim();
+		String password = passwordEditText.getText().toString().trim();
+		if (isCorrectOfInput(username, password)) {
 			RegisterTask registerTask = new RegisterTask();
-			registerTask.execute(username, pswd);
+			registerTask.execute(username, password);
 		}
 	}
 
-	/**
-	 * ÅĞ¶ÏEditTextÊäÈë¸ñÊ½ÊÇ·ñÕıÈ·
-	 * 
-	 * @return boolean
-	 */
-	public boolean isCorrectOfInput(String username, String pswd) {
+	public boolean isCorrectOfInput(String username, String password) {
 		if (username.equals("")) {
-			Toast.makeText(RegisterActivity.this, "ÓÃ»§Ãû²»ÄÜÎª¿Õ", Toast.LENGTH_SHORT)
+			Toast.makeText(RegisterActivity.this, "ç”¨æˆ·åä¸èƒ½ä¸ºç©º", Toast.LENGTH_SHORT)
 					.show();
 			return false;
 		}
-		if (pswd.equals("")) {
-			Toast.makeText(RegisterActivity.this, "ÃÜÂë²»ÄÜÎª¿Õ", Toast.LENGTH_SHORT)
+		if (password.equals("")) {
+			Toast.makeText(RegisterActivity.this, "å¯†ç ä¸èƒ½ä¸ºç©º", Toast.LENGTH_SHORT)
 					.show();
 			return false;
 		}
@@ -68,18 +64,19 @@ public class RegisterActivity extends Activity {
 	}
 
 	/**
-	 * Ö´ĞĞµÇÂ¼²Ù×÷µÄÒì²½ÈÎÎñÀà
+	 * æ‰§è¡Œæ³¨å†Œçš„å¼‚æ­¥ä»»åŠ¡ç±»
 	 * 
-	 * @author vanchu
+	 * @author LinterChen linterchen@vanchu.net
+	 * @date 2015-11-16
 	 */
 	class RegisterTask extends AsyncTask<String, Void, Integer> {
 		@Override
 		protected Integer doInBackground(String... param) {
-			// ´¦ÀíµÇÂ¼²Ù×÷µÄurl
+			// æ‰§è¡Œæ³¨å†Œæ“ä½œçš„url
 			String url = HttpUtil.URL_IP + "/RegisterServlet";
 			List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
 			nameValuePair.add(new BasicNameValuePair("username", param[0]));
-			nameValuePair.add(new BasicNameValuePair("pswd", param[1]));
+			nameValuePair.add(new BasicNameValuePair("password", param[1]));
 			String result = new HttpUtil().Connect(url, nameValuePair);
 			return Integer.parseInt(result.trim());
 		}
@@ -87,18 +84,18 @@ public class RegisterActivity extends Activity {
 		@Override
 		protected void onPostExecute(Integer result) {
 			switch (result) {
-			case TypeUtil.REG_USEREXIST:
-				// ¸ÃÓÃ»§ÒÑ´æÔÚ
-				Toast.makeText(RegisterActivity.this, "¸ÃÓÃ»§ÒÑ´æÔÚ",
+			case TypeUtil.REG_USER_EXIST:
+				// è¯¥ç”¨æˆ·å·²å­˜åœ¨
+				Toast.makeText(RegisterActivity.this, "è¯¥ç”¨æˆ·å·²å­˜åœ¨",
 						Toast.LENGTH_SHORT).show();
 				break;
 			case TypeUtil.REG_SUCCESS:
-				// ×¢²á³É¹¦
-				// Ìø×ªµ½LoginActivity
+				// æ³¨å†ŒæˆåŠŸ
+				// è·³è½¬åˆ°LoginActivity
 				break;
 			case TypeUtil.REG_FAIL:
-				// ×¢²áÊ§°Ü
-				Toast.makeText(RegisterActivity.this, "×¢²áÊ§°Ü,ÇëÉÔºóÖØÊÔ",
+				// æ³¨å†Œå¤±è´¥
+				Toast.makeText(RegisterActivity.this, "æ³¨å†Œå¤±è´¥,è¯·ç¨åé‡è¯•",
 						Toast.LENGTH_SHORT).show();
 				break;
 			}
