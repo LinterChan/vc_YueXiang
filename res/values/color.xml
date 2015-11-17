@@ -5,4 +5,7 @@
     <color name="register_button_color_1">#BFBFBF</color>
     <color name="register_button_color_2">#ADADAD</color>
     <color name="register_button_text_color">#ffffff</color>
+    <!-- 登录 -->
+    <color name="login_bg_color">#B2DFEE</color>
+    <color name="login_button_text_color">#ffffff</color>
 </resources>

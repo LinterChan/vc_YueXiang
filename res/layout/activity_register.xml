@@ -26,7 +26,7 @@
         android:layout_height="50dp"
         android:text="注册"
         android:textColor="@color/register_button_text_color"
-        android:background="@drawable/register_icon_register_button"
+        android:background="@drawable/icon_register_login_button"
         android:layout_below="@id/register_password_edittext"
         android:onClick="onClick_registerButton"
         android:layout_marginLeft="1dp"
