@@ -1,4 +1,4 @@
-package com.example.vc_yuexiang.util;
+package com.linter.vc_yuexiang.util;
 
 /**
  * 服务器端返回结果的工具类

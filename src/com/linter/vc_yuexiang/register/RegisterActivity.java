@@ -1,25 +1,18 @@
-package com.example.vc_yuexiang.register;
+package com.linter.vc_yuexiang.register;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.vc_yuexiang.R;
-import com.example.vc_yuexiang.http.HttpRequestHelper;
-import com.example.vc_yuexiang.http.HttpRequestHelper.DoResultListener;
-import com.example.vc_yuexiang.http.HttpUtil;
-import com.example.vc_yuexiang.util.TypeUtil;
+import com.linter.vc_yuexiang.http.HttpRequestHelper;
+import com.linter.vc_yuexiang.http.HttpUtil;
+import com.linter.vc_yuexiang.http.HttpRequestHelper.DoResultListener;
+import com.linter.vc_yuexiang.util.TypeUtil;
 
 /**
  * 注册Activity
