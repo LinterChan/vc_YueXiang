@@ -55,6 +55,8 @@ public class LoginActivity extends Activity {
 						break;
 					case TypeUtil.LOGIN_SUCCESS:
 						// 跳转到HomeActivity主页
+						
+						finish();
 						break;
 					case TypeUtil.LOGIN_FAIL:
 						Toast.makeText(LoginActivity.this, "登录失败,请稍后重试",

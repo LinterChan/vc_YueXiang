@@ -40,7 +40,8 @@ public class HttpRequestHelper {
 
 		@Override
 		protected void onPostExecute(String result) {
-			doResultListener.doResult(result);
+			if(doResultListener != null)
+				doResultListener.doResult(result);
 		}
 	}
 	

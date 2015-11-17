@@ -35,7 +35,6 @@ public class RegisterActivity extends Activity {
 	public void initView() {
 		usernameEditText = (EditText) findViewById(R.id.register_username_edittext);
 		passwordEditText = (EditText) findViewById(R.id.register_password_edittext);
-		usernameEditText.clearFocus();
 	}
 
 	public void onClick_registerButton(View view) {
@@ -52,22 +51,22 @@ public class RegisterActivity extends Activity {
 				public void doResult(String result) {
 					switch (Integer.parseInt(result)) {
 					case TypeUtil.REG_USER_EXIST:
-						// 该用户已存在
 						Toast.makeText(RegisterActivity.this, "该用户已存在",
 								Toast.LENGTH_SHORT).show();
 						break;
 					case TypeUtil.REG_SUCCESS:
-						// 注册成功
-						// 跳转到LoginActivity
+						// 跳转到HomeActivity
+						
+						finish();
 						break;
 					case TypeUtil.REG_FAIL:
-						// 注册失败
 						Toast.makeText(RegisterActivity.this, "注册失败,请稍后重试",
 								Toast.LENGTH_SHORT).show();
 						break;
 					}
 				}
 			});
+			helper.execute();
 //			RegisterTask registerTask = new RegisterTask();
 //			registerTask.execute(username, password);
 		}
