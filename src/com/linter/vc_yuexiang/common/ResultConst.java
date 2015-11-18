@@ -1,12 +1,12 @@
-package com.linter.vc_yuexiang.util;
+package com.linter.vc_yuexiang.common;
 
 /**
- * 服务器端返回结果的工具类
+ * 服务器端返回结果的常量类
  * 
  * @author LinterChen linterchen@vanchu.net
  * @date 2015-11-16
  */
-public class TypeUtil {
+public class ResultConst {
 	/**
 	 * 注册：用户已存在
 	 */

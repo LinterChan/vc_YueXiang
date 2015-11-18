@@ -2,37 +2,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity"
+    android:background="@color/register_bg_color"
     android:gravity="center_vertical"
-    android:background="@color/register_bg_color" >
+    tools:context=".RegisterActivity" >
 
-    <EditText 
+    <EditText
         android:id="@+id/register_username_edittext"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:hint="用户名"
-        />
-    <EditText 
+        android:hint="用户名" />
+
+    <EditText
         android:id="@+id/register_password_edittext"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:hint="密码"
-        android:inputType="textPassword"
         android:layout_below="@id/register_username_edittext"
-        />
-    <Button 
+        android:hint="密码"
+        android:inputType="textPassword" />
+
+    <Button
         android:id="@+id/register_register_button"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="注册"
-        android:textColor="@color/register_button_text_color"
-        android:background="@drawable/icon_register_login_button"
         android:layout_below="@id/register_password_edittext"
-        android:onClick="onClick_registerButton"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
-        />
-    <!--  
+        android:background="@drawable/icon_register_login_button"
+        android:text="注册"
+        android:textColor="@color/register_button_text_color" />
+    <!--
+    用shape做圆角
     <Button 
         android:id="@+id/register_register_button"
         android:layout_width="fill_parent"
@@ -44,6 +43,7 @@
         android:onClick="onClick_registerButton"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
-        />-->
+        />
+    -->
 
 </RelativeLayout>
