@@ -15,7 +15,7 @@ import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.ResultConst;
 import com.linter.vc_yuexiang.http.HttpRequestHelper;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.DoResultListener;
-import com.linter.vc_yuexiang.http.HttpUtil;
+import com.linter.vc_yuexiang.http.HttpClientUtil;
 
 public class LoginActivity extends Activity {
 	private EditText usernameEditText;
@@ -44,24 +44,13 @@ public class LoginActivity extends Activity {
 	class LoginButtonListener implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
-			Map<String, String> map = getRequestData();
+			Map<String, String> map = RequestDataGetter.getRequestData(
+					LoginActivity.this, usernameEditText, passwordEditText);
 			if (map != null) {
-				String url = HttpUtil.URL_IP + "/LoginServlet";
+				String url = HttpClientUtil.URL_IP + "/LoginServlet";
 				requestToServer(url, map);
 			}
 		}
-	}
-
-	public Map<String, String> getRequestData() {
-		String username = usernameEditText.getText().toString().trim();
-		String password = passwordEditText.getText().toString().trim();
-		if (isCorrectOfInput(username, password)) {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("username", username);
-			map.put("password", password);
-			return map;
-		}
-		return null;
 	}
 
 	public void requestToServer(String url, Map<String, String> map) {
@@ -91,19 +80,5 @@ public class LoginActivity extends Activity {
 			}
 		});
 		helper.execute();
-	}
-
-	public boolean isCorrectOfInput(String username, String password) {
-		if (username.equals("")) {
-			Toast.makeText(LoginActivity.this, "用户名不能为空", Toast.LENGTH_SHORT)
-					.show();
-			return false;
-		}
-		if (password.equals("")) {
-			Toast.makeText(LoginActivity.this, "密码不能为空", Toast.LENGTH_SHORT)
-					.show();
-			return false;
-		}
-		return true;
 	}
 }

@@ -15,7 +15,7 @@ import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.ResultConst;
 import com.linter.vc_yuexiang.http.HttpRequestHelper;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.DoResultListener;
-import com.linter.vc_yuexiang.http.HttpUtil;
+import com.linter.vc_yuexiang.http.HttpClientUtil;
 
 /**
  * 注册Activity
@@ -52,7 +52,7 @@ public class RegisterActivity extends Activity {
 		public void onClick(View arg0) {
 			Map<String, String> map = getRequestData();
 			if (map != null) {
-				String url = HttpUtil.URL_IP + "/RegisterServlet";
+				String url = HttpClientUtil.URL_IP + "/RegisterServlet";
 				requestToServer(url, map);
 			}
 		}
