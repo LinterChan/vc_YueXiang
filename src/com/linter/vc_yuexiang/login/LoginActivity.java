@@ -1,9 +1,7 @@
 package com.linter.vc_yuexiang.login;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,12 +10,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.common.BaseActivity;
+import com.linter.vc_yuexiang.common.CorrectnessListener;
+import com.linter.vc_yuexiang.common.DoResultListener;
 import com.linter.vc_yuexiang.common.ResultConst;
-import com.linter.vc_yuexiang.http.HttpRequestHelper;
-import com.linter.vc_yuexiang.http.HttpRequestHelper.DoResultListener;
 import com.linter.vc_yuexiang.http.HttpClientUtil;
 
-public class LoginActivity extends Activity {
+/**
+ * 登录Activity
+ * 
+ * @author LinterChen linterchen@vanchu.net
+ * @date 2015-11-20
+ */
+public class LoginActivity extends BaseActivity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
 	private Button loginButton;
@@ -31,33 +36,40 @@ public class LoginActivity extends Activity {
 		setupLoginButton();
 	}
 
-	public void initView() {
+	@Override
+	protected void onDestroy() {
+		isDestroyed = true;
+		super.onDestroy();
+	}
+
+	private void initView() {
 		usernameEditText = (EditText) findViewById(R.id.login_username_edittext);
 		passwordEditText = (EditText) findViewById(R.id.login_password_edittext);
 		loginButton = (Button) findViewById(R.id.login_login_button);
 	}
 
-	public void setupLoginButton() {
+	private void setupLoginButton() {
 		loginButton.setOnClickListener(new LoginButtonListener());
 	}
 
-	class LoginButtonListener implements OnClickListener {
+	private class LoginButtonListener implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
-			Map<String, String> map = RequestDataGetter.getRequestData(
-					LoginActivity.this, usernameEditText, passwordEditText);
+			Map<String, String> map = RequestLoginDataGetter.getRequestData(
+					usernameEditText, passwordEditText,
+					new LoginCorrectnessListener());
 			if (map != null) {
 				String url = HttpClientUtil.URL_IP + "/LoginServlet";
-				requestToServer(url, map);
+				LoginRequester.requestToServer(url, map,
+						new DoLoginResultListener());
 			}
 		}
 	}
 
-	public void requestToServer(String url, Map<String, String> map) {
-		HttpRequestHelper helper = new HttpRequestHelper(url, map);
-		helper.setDoResultListener(new DoResultListener() {
-			@Override
-			public void doResult(String result) {
+	class DoLoginResultListener implements DoResultListener {
+		@Override
+		public void doResult(String result) {
+			if (!isFinishing() && !isDestroyed) {
 				switch (Integer.parseInt(result)) {
 				case ResultConst.LOGIN_USER_NOT_EXIST:
 					Toast.makeText(LoginActivity.this, "用户不存在",
@@ -78,7 +90,26 @@ public class LoginActivity extends Activity {
 					break;
 				}
 			}
-		});
-		helper.execute();
+		}
+	}
+
+	class LoginCorrectnessListener implements CorrectnessListener {
+		@Override
+		public void doResultAfterJudgeInput(int resultCode) {
+			switch (resultCode) {
+			case ResultConst.LOGIN_EMAIL_NOT_CORRECT:
+				Toast.makeText(LoginActivity.this, "邮箱格式错误", Toast.LENGTH_SHORT)
+						.show();
+				break;
+			case ResultConst.LOGIN_USER_NULL:
+				Toast.makeText(LoginActivity.this, "用户名不能为空",
+						Toast.LENGTH_SHORT).show();
+				break;
+			case ResultConst.LOGIN_PASSWORD_NULL:
+				Toast.makeText(LoginActivity.this, "密码不能为空", Toast.LENGTH_SHORT)
+						.show();
+				break;
+			}
+		}
 	}
 }

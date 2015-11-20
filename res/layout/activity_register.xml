@@ -10,15 +10,21 @@
         android:id="@+id/register_username_edittext"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:hint="用户名" />
+        android:hint="用户名"
+        android:inputType="textEmailAddress"
+        android:maxLength="25"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/register_password_edittext"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_below="@id/register_username_edittext"
+        android:digits="_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWSYZ"
         android:hint="密码"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:maxLength="20"
+        android:singleLine="true" />
 
     <Button
         android:id="@+id/register_register_button"
@@ -30,8 +36,8 @@
         android:background="@drawable/icon_register_login_button"
         android:text="注册"
         android:textColor="@color/register_button_text_color" />
-    <!--
-    用shape做圆角
+    
+    <!-- 用shape做圆角
     <Button 
         android:id="@+id/register_register_button"
         android:layout_width="fill_parent"
@@ -44,6 +50,5 @@
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
         />
-    -->
-
+        -->
 </RelativeLayout>

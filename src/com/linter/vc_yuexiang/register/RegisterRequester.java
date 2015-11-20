@@ -1,11 +1,11 @@
-package com.linter.vc_yuexiang.login;
+package com.linter.vc_yuexiang.register;
 
 import java.util.Map;
 
 import com.linter.vc_yuexiang.common.DoResultListener;
 import com.linter.vc_yuexiang.http.HttpRequestHelper;
 
-public class LoginRequester {
+public class RegisterRequester {
 
 	public static void requestToServer(String url, Map<String, String> map,
 			DoResultListener listener) {
@@ -13,5 +13,5 @@ public class LoginRequester {
 		helper.setDoResultListener(listener);
 		helper.execute();
 	}
-
+	
 }
