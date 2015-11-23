@@ -77,6 +77,9 @@ public class HttpUtil {
 	}
 
 	private void initData(Map<String, String> map) {
+		if (map == null) {
+			return;
+		}
 		Iterator<Entry<String, String>> it = map.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, String> entry = it.next();

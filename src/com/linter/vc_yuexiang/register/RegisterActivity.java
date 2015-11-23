@@ -14,7 +14,6 @@ import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.common.CorrectnessListener;
 import com.linter.vc_yuexiang.common.DoResultListener;
 import com.linter.vc_yuexiang.common.ResultConst;
-import com.linter.vc_yuexiang.http.HttpClientUtil;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 /**
@@ -61,8 +60,7 @@ public class RegisterActivity extends BaseActivity {
 						.getRequestData(usernameEditText, passwordEditText,
 								new RegisterCorrectnessListener());
 				if (map != null) {
-					String url = HttpClientUtil.URL_IP + "/RegisterServlet";
-					RegisterRequester.requestToServer(url, map,
+					RegisterRequester.requestToServer(map,
 							new DoRegisterResultListener());
 				}
 			} else {

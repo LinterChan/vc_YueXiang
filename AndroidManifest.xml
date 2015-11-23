@@ -16,14 +16,16 @@
         <activity
             android:name="com.linter.vc_yuexiang.register.RegisterActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.linter.vc_yuexiang.login.LoginActivity" >
+        </activity>
+        <activity
+            android:name="com.linter.vc_yuexiang.home.HomeActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
