@@ -15,6 +15,7 @@ import com.linter.vc_yuexiang.common.CorrectnessListener;
 import com.linter.vc_yuexiang.common.DoResultListener;
 import com.linter.vc_yuexiang.common.ResultConst;
 import com.linter.vc_yuexiang.http.HttpClientUtil;
+import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 /**
  * 登录Activity
@@ -55,13 +56,18 @@ public class LoginActivity extends BaseActivity {
 	private class LoginButtonListener implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
-			Map<String, String> map = RequestLoginDataGetter.getRequestData(
-					usernameEditText, passwordEditText,
-					new LoginCorrectnessListener());
-			if (map != null) {
-				String url = HttpClientUtil.URL_IP + "/LoginServlet";
-				LoginRequester.requestToServer(url, map,
-						new DoLoginResultListener());
+			if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
+				Map<String, String> map = RequestLoginDataGetter
+						.getRequestData(usernameEditText, passwordEditText,
+								new LoginCorrectnessListener());
+				if (map != null) {
+					String url = HttpClientUtil.URL_IP + "/LoginServlet";
+					LoginRequester.requestToServer(url, map,
+							new DoLoginResultListener());
+				}
+			} else {
+				Toast.makeText(LoginActivity.this, "网络未连接", Toast.LENGTH_SHORT)
+						.show();
 			}
 		}
 	}
