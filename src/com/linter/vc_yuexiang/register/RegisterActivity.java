@@ -72,9 +72,9 @@ public class RegisterActivity extends BaseActivity {
 
 	class DoRegisterResultListener implements DoResultListener {
 		@Override
-		public void doResult(String result) {
+		public void doResult(Object result) {
 			if (!isFinishing() && !isDestroyed) {
-				switch (Integer.parseInt(result)) {
+				switch (Integer.parseInt((String)result)) {
 				case ResultConst.REG_EMAIL_NOT_EXIST:
 					Toast.makeText(RegisterActivity.this, "该邮箱不存在",
 							Toast.LENGTH_SHORT).show();

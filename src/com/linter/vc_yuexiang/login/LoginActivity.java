@@ -72,9 +72,9 @@ public class LoginActivity extends BaseActivity {
 
 	class DoLoginResultListener implements DoResultListener {
 		@Override
-		public void doResult(String result) {
+		public void doResult(Object result) {
 			if (!isFinishing() && !isDestroyed) {
-				switch (Integer.parseInt(result)) {
+				switch (Integer.parseInt((String)result)) {
 				case ResultConst.LOGIN_USER_NOT_EXIST:
 					Toast.makeText(LoginActivity.this, "用户不存在",
 							Toast.LENGTH_SHORT).show();
