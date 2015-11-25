@@ -5,22 +5,27 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.linter.vc_yuexiang.common.CorrectnessListener;
 import com.linter.vc_yuexiang.common.ResultConst;
-import android.widget.EditText;
+import com.linter.vc_yuexiang.http.HttpClientUtil;
+import com.linter.vc_yuexiang.http.HttpRequestHelper;
+import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
+import com.linter.vc_yuexiang.register.RegisterModel.CorrectnessListener;
 
-/**
- * 获取网络请求的参数
- * 
- * @author LinterChen linterchen@vanchu.net
- * @date 2015-11-19
- */
-public class RequestLoginDataGetter {
+public class LoginModel {
 
-	public static Map<String, String> getRequestData(EditText usernameEditText,
-			EditText passwordEditText, CorrectnessListener listener) {
-		String username = usernameEditText.getText().toString().trim();
-		String password = passwordEditText.getText().toString().trim();
+	public static void requestToServer(String username, String password,
+			HandleResultListener hListener, CorrectnessListener cListener) {
+		Map<String, String> map = getRequestData(username, password, cListener);
+		if (map != null) {
+			String url = HttpClientUtil.URL_IP + "/LoginServlet";
+			HttpRequestHelper helper = new HttpRequestHelper(url, map);
+			helper.setDoResultListener(hListener);
+			helper.execute();
+		}
+	}
+
+	private static Map<String, String> getRequestData(String username,
+			String password, CorrectnessListener listener) {
 		if (isCorrectOfInput(username, password, listener)) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("username", username);

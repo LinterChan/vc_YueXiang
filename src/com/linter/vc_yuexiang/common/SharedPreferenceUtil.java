@@ -1,9 +1,9 @@
-package com.linter.vc_yuexiang.sharedpreference;
+package com.linter.vc_yuexiang.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class MySharedPreference {
+public class SharedPreferenceUtil {
 	/**
 	 * 登录信息：保存
 	 * 

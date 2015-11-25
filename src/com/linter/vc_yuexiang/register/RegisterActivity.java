@@ -1,7 +1,5 @@
 package com.linter.vc_yuexiang.register;
 
-import java.util.Map;
-
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,13 +9,12 @@ import android.widget.Toast;
 
 import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
-import com.linter.vc_yuexiang.common.CorrectnessListener;
-import com.linter.vc_yuexiang.common.DoResultListener;
 import com.linter.vc_yuexiang.common.ResultConst;
+import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
+import com.linter.vc_yuexiang.register.RegisterModel.CorrectnessListener;
 
 /**
- * 注册Activity
  * 
  * @author LinterChen linterchen@vanchu.net
  * @date 2015-11-16
@@ -36,12 +33,6 @@ public class RegisterActivity extends BaseActivity {
 		setupRegisterButton();
 	}
 
-	@Override
-	protected void onDestroy() {
-		isDestroyed = true;
-		super.onDestroy();
-	}
-
 	private void initView() {
 		usernameEditText = (EditText) findViewById(R.id.register_username_edittext);
 		passwordEditText = (EditText) findViewById(R.id.register_password_edittext);
@@ -56,13 +47,10 @@ public class RegisterActivity extends BaseActivity {
 		@Override
 		public void onClick(View arg0) {
 			if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
-				Map<String, String> map = RequestRegisterDataGetter
-						.getRequestData(usernameEditText, passwordEditText,
-								new RegisterCorrectnessListener());
-				if (map != null) {
-					RegisterRequester.requestToServer(map,
-							new DoRegisterResultListener());
-				}
+				RegisterModel.requestToServer(usernameEditText.getText()
+						.toString().trim(), passwordEditText.getText()
+						.toString().trim(), new RegisterResultListener(),
+						new RegisterCorrectnessListener());
 			} else {
 				Toast.makeText(RegisterActivity.this, "网络未连接",
 						Toast.LENGTH_SHORT).show();
@@ -70,11 +58,11 @@ public class RegisterActivity extends BaseActivity {
 		}
 	}
 
-	class DoRegisterResultListener implements DoResultListener {
+	class RegisterResultListener implements HandleResultListener {
 		@Override
 		public void doResult(Object result) {
-			if (!isFinishing() && !isDestroyed) {
-				switch (Integer.parseInt((String)result)) {
+			if (!isFinishing() && !isFinished()) {
+				switch (Integer.parseInt((String) result)) {
 				case ResultConst.REG_EMAIL_NOT_EXIST:
 					Toast.makeText(RegisterActivity.this, "该邮箱不存在",
 							Toast.LENGTH_SHORT).show();

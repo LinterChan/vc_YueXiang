@@ -2,14 +2,12 @@ package com.linter.vc_yuexiang.http;
 
 import java.util.Map;
 
-import com.linter.vc_yuexiang.common.DoResultListener;
-
 import android.os.AsyncTask;
 
 public class HttpRequestHelper {
 	private String url = null;
 	private Map<String, String> map = null;
-	private DoResultListener doResultListener = null;
+	private HandleResultListener doResultListener = null;
 
 	public HttpRequestHelper(String url, Map<String, String> map) {
 		this.url = url;
@@ -30,7 +28,7 @@ public class HttpRequestHelper {
 		}
 	}
 	
-	public void setDoResultListener(DoResultListener doResultListener){
+	public void setDoResultListener(HandleResultListener doResultListener){
 		this.doResultListener = doResultListener;
 	}
 
@@ -38,5 +36,10 @@ public class HttpRequestHelper {
 		HttpRequestTask httpRequestTask = new HttpRequestTask();
 		httpRequestTask.execute();
 	}
+	
+	public interface HandleResultListener{
+		void doResult(Object result);
+	}
+
 	
 }

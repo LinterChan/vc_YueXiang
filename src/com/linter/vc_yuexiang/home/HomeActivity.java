@@ -2,9 +2,7 @@ package com.linter.vc_yuexiang.home;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -24,12 +22,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vc_yuexiang.R;
-import com.linter.vc_yuexiang.common.DoResultListener;
+import com.linter.vc_yuexiang.common.BaseActivity;
+import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.common.SongInfo;
+import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
-import com.linter.vc_yuexiang.sharedpreference.MySharedPreference;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends BaseActivity {
 	private static final int PAGE_NUM = 3;
 	private ViewPager mViewPager;
 	private View[] view;
@@ -70,7 +69,6 @@ public class HomeActivity extends Activity {
 		setupLoveButton();
 		setupShareButton();
 		setupSongSeekBar();
-
 	}
 
 	@Override
@@ -164,17 +162,19 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	private class GetSongDataListener implements DoResultListener {
+	private class GetSongDataListener implements HandleResultListener {
 		@Override
 		public void doResult(Object result) {
-			songData = JsonTool.getSongData((String) result);
-			setupSongList();
+			if (!isFinishing() && !isFinished()) {
+				songData = HomeModel.getSongData((String) result);
+				setupSongList();
+			}
 		}
 	}
 
 	private void getSongData() {
 		if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
-			HomeRequester.getSongData(new GetSongDataListener());
+			HomeModel.getSongData(new GetSongDataListener());
 		} else {
 			// 加载本地数据 Or 显示“重新加载”,若重新加载则隐藏所有控件
 
@@ -201,14 +201,14 @@ public class HomeActivity extends Activity {
 				e.printStackTrace();
 			}
 
-			HomeBackgroundLoader.loadImage(songInfo.getImageUrl(),
-					new SetImageListener(i));
-			
+			HomeModel
+					.loadImage(songInfo.getImageUrl(), new SetImageListener(i));
+
 			songSeekBar[i].setMax(mediaPlayer[i].getDuration());
 		}
 	}
 
-	private class SetImageListener implements DoResultListener {
+	private class SetImageListener implements HandleResultListener {
 		private int i;
 
 		public SetImageListener(int i) {
@@ -217,8 +217,10 @@ public class HomeActivity extends Activity {
 
 		@Override
 		public void doResult(Object result) {
-			Bitmap bitmap = (Bitmap) result;
-			backgroundImageView[i].setImageBitmap(bitmap);
+			if (!isFinishing() && !isFinished()) {
+				Bitmap bitmap = (Bitmap) result;
+				backgroundImageView[i].setImageBitmap(bitmap);
+			}
 		}
 	}
 
@@ -339,17 +341,17 @@ public class HomeActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
-				if (MySharedPreference.getLoginFlag(getApplicationContext())) {
-					Map<String, String> map = RequestLoveDataGetter
-							.getRequestData(
-									songData.get(i).getSid(),
-									MySharedPreference
-											.getLoginInfo(getApplicationContext()));
+				if (SharedPreferenceUtil.getLoginFlag(getApplicationContext())) {
 					if (isLoved[i]) {
-						HomeRequester.cancelLoveSong(map, new CancelLoveSongListener(
-								i));
+						HomeModel.cancelLoveSong(songData.get(i).getSid(),
+								SharedPreferenceUtil
+										.getLoginInfo(getApplicationContext()),
+								new CancelLoveSongListener(i));
 					} else {
-						HomeRequester.loveSong(map, new LoveSongListener(i));
+						HomeModel.loveSong(songData.get(i).getSid(),
+								SharedPreferenceUtil
+										.getLoginInfo(getApplicationContext()),
+								new LoveSongListener(i));
 					}
 				} else {
 					Toast.makeText(HomeActivity.this, "请先登录",
@@ -384,7 +386,7 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	private class LoveSongListener implements DoResultListener {
+	private class LoveSongListener implements HandleResultListener {
 		private int i;
 
 		public LoveSongListener(int i) {
@@ -393,18 +395,20 @@ public class HomeActivity extends Activity {
 
 		@Override
 		public void doResult(Object result) {
-			if (Boolean.parseBoolean((String) result)) {
-				loveButton[i].setImageResource(R.drawable.home_icon_love2);
-				Toast.makeText(HomeActivity.this, "收藏成功", Toast.LENGTH_SHORT)
-						.show();
-			} else {
-				Toast.makeText(HomeActivity.this, "收藏失败", Toast.LENGTH_SHORT)
-						.show();
+			if (!isFinishing() && !isFinished()) {
+				if (Boolean.parseBoolean((String) result)) {
+					loveButton[i].setImageResource(R.drawable.home_icon_love2);
+					Toast.makeText(HomeActivity.this, "收藏成功",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(HomeActivity.this, "收藏失败",
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 	}
 
-	private class CancelLoveSongListener implements DoResultListener {
+	private class CancelLoveSongListener implements HandleResultListener {
 		private int i;
 
 		public CancelLoveSongListener(int i) {
@@ -413,13 +417,15 @@ public class HomeActivity extends Activity {
 
 		@Override
 		public void doResult(Object result) {
-			if (Boolean.parseBoolean((String) result)) {
-				loveButton[i].setImageResource(R.drawable.home_icon_love1);
-				Toast.makeText(HomeActivity.this, "取消收藏成功", Toast.LENGTH_SHORT)
-						.show();
-			} else {
-				Toast.makeText(HomeActivity.this, "取消收藏失败", Toast.LENGTH_SHORT)
-						.show();
+			if (!isFinishing() && !isFinished()) {
+				if (Boolean.parseBoolean((String) result)) {
+					loveButton[i].setImageResource(R.drawable.home_icon_love1);
+					Toast.makeText(HomeActivity.this, "取消收藏成功",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(HomeActivity.this, "取消收藏失败",
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 	}

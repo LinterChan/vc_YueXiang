@@ -5,21 +5,21 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.linter.vc_yuexiang.common.DoResultListener;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
+
 public class ImageLoader {
 	private String url = null;
-	private DoResultListener listener = null;
+	private HandleResultListener listener = null;
 
 	public ImageLoader(String url) {
 		this.url = url;
 	}
 
-	public void setDoResultListener(DoResultListener listener) {
+	public void setDoResultListener(HandleResultListener listener) {
 		this.listener = listener;
 	}
 

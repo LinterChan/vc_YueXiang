@@ -19,7 +19,7 @@
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#8f9ACD32" >
+        android:background="#8f4D4D4D" >
     </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>
