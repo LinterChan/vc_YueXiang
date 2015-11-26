@@ -9,6 +9,10 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -28,138 +32,156 @@ import com.linter.vc_yuexiang.common.SongInfo;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends FragmentActivity {
 	private static final int PAGE_NUM = 3;
+	private boolean isFinished = false;
 	private ViewPager mViewPager;
-	private View[] view;
-	private List<View> mViewPagerData;
-	private PagerAdapter mViewPagerAdapter;
+	private List<HomePageFragment> mFragments;
+	private PagerAdapter mAdapter;
+	
+//	private View[] view;
+//	private List<View> mViewPagerData;
+//	private PagerAdapter mViewPagerAdapter;
 
-	private List<SongInfo> songData = null;
-	private ImageView[] backgroundImageView = new ImageView[PAGE_NUM];
-	private TextView[] volTextView = new TextView[PAGE_NUM];
-	private TextView[] titleTextView = new TextView[PAGE_NUM];
-	private TextView[] contentTextView = new TextView[PAGE_NUM];
-	private SeekBar[] songSeekBar = new SeekBar[PAGE_NUM];
-	private ImageView[] playSongButton = new ImageView[PAGE_NUM];
-	private TextView[] songNameTextView = new TextView[PAGE_NUM];
-	private ImageView[] shareButton = new ImageView[PAGE_NUM];
-	private ImageView[] loveButton = new ImageView[PAGE_NUM];
+//	private List<SongInfo> songData = null;
+//	private ImageView[] backgroundImageView = new ImageView[PAGE_NUM];
+//	private TextView[] volTextView = new TextView[PAGE_NUM];
+//	private TextView[] titleTextView = new TextView[PAGE_NUM];
+//	private TextView[] contentTextView = new TextView[PAGE_NUM];
+//	private SeekBar[] songSeekBar = new SeekBar[PAGE_NUM];
+//	private ImageView[] playSongButton = new ImageView[PAGE_NUM];
+//	private TextView[] songNameTextView = new TextView[PAGE_NUM];
+//	private ImageView[] shareButton = new ImageView[PAGE_NUM];
+//	private ImageView[] loveButton = new ImageView[PAGE_NUM];
 
-	private MediaPlayer[] mediaPlayer = new MediaPlayer[PAGE_NUM];
+//	private MediaPlayer[] mediaPlayer = new MediaPlayer[PAGE_NUM];
 
-	private boolean[] isPlaySong = new boolean[PAGE_NUM];
-	private boolean[] isLoved = new boolean[PAGE_NUM];
+//	private boolean[] isPlaySong = new boolean[PAGE_NUM];
+//	private boolean[] isLoved = new boolean[PAGE_NUM];
 
-	private int[] msgProcess = new int[PAGE_NUM];
-	private int[] songProgress = new int[PAGE_NUM];
-	private Handler seekBarHandler = new SeekBarHandler();
+//	private int[] msgProcess = new int[PAGE_NUM];
+//	private int[] songProgress = new int[PAGE_NUM];
+//	private Handler seekBarHandler = new SeekBarHandler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 
-		initViewPagerData();
+		initFragments();
 		initView();
-		getSongData();
-
+		
 		setupViewPager();
-		setupPlaySongButton();
-		setupLoveButton();
-		setupShareButton();
-		setupSongSeekBar();
+//		initViewPagerData();
+//		initView();
+//		getSongData();
+//
+//		setupViewPager();
+//		setupPlaySongButton();
+//		setupLoveButton();
+//		setupShareButton();
+//		setupSongSeekBar();
 	}
 
 	@Override
 	protected void onPause() {
-		for (int i = 0; i < PAGE_NUM; i++) {
-			if (mediaPlayer[i].isPlaying()) {
-				mediaPlayer[i].pause();
-				isPlaySong[i] = false;
-				seekBarHandler.removeMessages(songProgress[i]);
-				playSongButton[i]
-						.setBackgroundResource(R.drawable.stop_button_not_press);
-				break;
-			}
-		}
+//		for (int i = 0; i < PAGE_NUM; i++) {
+//			if (mediaPlayer[i].isPlaying()) {
+//				mediaPlayer[i].pause();
+//				isPlaySong[i] = false;
+//				seekBarHandler.removeMessages(songProgress[i]);
+//				playSongButton[i]
+//						.setBackgroundResource(R.drawable.stop_button_not_press);
+//				break;
+//			}
+//		}
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
-		for (int i = 0; i < PAGE_NUM; i++) {
-			mediaPlayer[i].release();
-		}
-		super.onDestroy();
+		isFinished = true;
+//		for (int i = 0; i < PAGE_NUM; i++) {
+//			mediaPlayer[i].release();
+//		}
+//		super.onDestroy();
+	}
+	
+	private boolean isFinished(){
+		return isFinished;
 	}
 
+	private void initFragments(){
+		mFragments = new ArrayList<HomePageFragment>();
+		for(int i=0;i<PAGE_NUM;i++){
+			mFragments.add(new HomePageFragment());
+		}
+	}
 	private void initView() {
 		mViewPager = (ViewPager) findViewById(R.id.home_homepage_viewpager);
 
-		for (int i = 0; i < PAGE_NUM; i++) {
-			backgroundImageView[i] = (ImageView) view[i]
-					.findViewById(R.id.homepage_background_imageview);
-			volTextView[i] = (TextView) view[i]
-					.findViewById(R.id.homepage_vol_writer_textview);
-			titleTextView[i] = (TextView) view[i]
-					.findViewById(R.id.homepage_title_textview);
-			contentTextView[i] = (TextView) view[i]
-					.findViewById(R.id.homepage_content_textview);
-			songSeekBar[i] = (SeekBar) view[i]
-					.findViewById(R.id.homepage_song_seekbar);
-			playSongButton[i] = (ImageView) view[i]
-					.findViewById(R.id.homepage_playsong_button);
-			songNameTextView[i] = (TextView) view[i]
-					.findViewById(R.id.homepage_songname_textview);
-			shareButton[i] = (ImageView) view[i]
-					.findViewById(R.id.homepage_share_imageview);
-			loveButton[i] = (ImageView) view[i]
-					.findViewById(R.id.homepage_love_imageview);
-
-			mediaPlayer[i] = new MediaPlayer();
-
-			isPlaySong[i] = false;
-			isLoved[i] = false;
-		}
+//		for (int i = 0; i < PAGE_NUM; i++) {
+//			backgroundImageView[i] = (ImageView) view[i]
+//					.findViewById(R.id.homepage_background_imageview);
+//			volTextView[i] = (TextView) view[i]
+//					.findViewById(R.id.homepage_vol_writer_textview);
+//			titleTextView[i] = (TextView) view[i]
+//					.findViewById(R.id.homepage_title_textview);
+//			contentTextView[i] = (TextView) view[i]
+//					.findViewById(R.id.homepage_content_textview);
+//			songSeekBar[i] = (SeekBar) view[i]
+//					.findViewById(R.id.homepage_song_seekbar);
+//			playSongButton[i] = (ImageView) view[i]
+//					.findViewById(R.id.homepage_playsong_button);
+//			songNameTextView[i] = (TextView) view[i]
+//					.findViewById(R.id.homepage_songname_textview);
+//			shareButton[i] = (ImageView) view[i]
+//					.findViewById(R.id.homepage_share_imageview);
+//			loveButton[i] = (ImageView) view[i]
+//					.findViewById(R.id.homepage_love_imageview);
+//
+//			mediaPlayer[i] = new MediaPlayer();
+//
+//			isPlaySong[i] = false;
+//			isLoved[i] = false;
+//		}
 	}
 
-	private void initViewPagerData() {
-		mViewPagerData = new ArrayList<View>();
-		LayoutInflater inflater = LayoutInflater.from(this);
-		view = new View[PAGE_NUM];
-		for (int i = 0; i < PAGE_NUM; i++) {
-			view[i] = inflater.inflate(R.layout.viewpager_homepage, null);
-			mViewPagerData.add(view[i]);
-		}
-	}
+//	private void initViewPagerData() {
+//		mViewPagerData = new ArrayList<View>();
+//		LayoutInflater inflater = LayoutInflater.from(this);
+//		view = new View[PAGE_NUM];
+//		for (int i = 0; i < PAGE_NUM; i++) {
+//			view[i] = inflater.inflate(R.layout.fragment_homepage, null);
+//			mViewPagerData.add(view[i]);
+//		}
+//	}
 
 	private void setupViewPager() {
-		mViewPagerAdapter = new MyViewPagerAdapter();
-		mViewPager.setAdapter(mViewPagerAdapter);
+		mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragments);
+		mViewPager.setAdapter(mAdapter);
 	}
 
-	private class MyViewPagerAdapter extends PagerAdapter {
+	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+		private List<HomePageFragment> fragments;
+		public MyFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+		public MyFragmentPagerAdapter(FragmentManager fm,List<HomePageFragment> fragments) {
+			super(fm);
+			this.fragments = fragments;
+		}
+
+		@Override
+		public Fragment getItem(int arg0) {
+			return fragments.get(arg0);
+		}
+
 		@Override
 		public int getCount() {
-			return mViewPagerData.size();
+			return fragments.size();
 		}
-
-		@Override
-		public boolean isViewFromObject(View arg0, Object arg1) {
-			return arg0 == arg1;
-		}
-
-		@Override
-		public Object instantiateItem(View container, int position) {
-			((ViewPager) container).addView(mViewPagerData.get(position));
-			return mViewPagerData.get(position);
-		}
-
-		@Override
-		public void destroyItem(View container, int position, Object object) {
-			((ViewPager) container).removeView(mViewPagerData.get(position));
-		}
+		
 	}
 
 	private class GetSongDataListener implements HandleResultListener {
