@@ -1,11 +1,8 @@
 package com.linter.vc_yuexiang.home;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.linter.vc_yuexiang.common.SongInfo;
@@ -15,7 +12,7 @@ import com.linter.vc_yuexiang.http.ImageLoader;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 
 public class HomeModel {
-	public static void getSongData(HandleResultListener listener) {
+	public static void getSongDataFromServer(HandleResultListener listener) {
 		String url = HttpClientUtil.URL_IP + "/GetSongDataServlet";
 		HttpRequestHelper helper = new HttpRequestHelper(url, null);
 		helper.setDoResultListener(listener);
@@ -54,27 +51,23 @@ public class HomeModel {
 		return map;
 	}
 
-	public static List<SongInfo> getSongData(String result) {
-		List<SongInfo> list = new ArrayList<SongInfo>();
+	public static SongInfo getSongData(String result) {
+		SongInfo songInfo = null;
 		try {
-			JSONObject resultJson = new JSONObject(result);
-			JSONArray jsonArray = resultJson.getJSONArray("songData");
-			for (int i = 0; i < jsonArray.length(); i++) {
-				SongInfo songInfo = new SongInfo();
-				JSONObject song = jsonArray.getJSONObject(i);
-				songInfo.setSid(song.getString("sid"));
-				songInfo.setVol(song.getString("vol"));
-				songInfo.setTitle(song.getString("title"));
-				songInfo.setContent(song.getString("content"));
-				songInfo.setSongName(song.getString("songname"));
-				songInfo.setSinger(song.getString("singer"));
-				songInfo.setSongUrl(song.getString("songurl"));
-				songInfo.setImageUrl(song.getString("imageurl"));
-				list.add(songInfo);
-			}
+			JSONObject json = new JSONObject(result);
+			songInfo = new SongInfo();
+			songInfo.setSid(json.getString("sid"));
+			songInfo.setVol(json.getString("vol"));
+			songInfo.setWriter(json.getString("writer"));
+			songInfo.setTitle(json.getString("title"));
+			songInfo.setContent(json.getString("content"));
+			songInfo.setSongName(json.getString("songname"));
+			songInfo.setSinger(json.getString("singer"));
+			songInfo.setSongUrl(json.getString("songurl"));
+			songInfo.setImageUrl(json.getString("imageurl"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return list;
+		return songInfo;
 	}
 }
