@@ -30,8 +30,9 @@ import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 public class HomePageFragment extends Fragment {
 	private int i;
+	private boolean isDataLoaded = false;
 	private HomeActivity activity;
-	StopPlaySongReceiver receiver;
+	private StopPlaySongReceiver receiver;
 
 	private SongInfo songInfo;
 	private ImageView backgroundImageView;
@@ -44,10 +45,10 @@ public class HomePageFragment extends Fragment {
 	private ImageView shareSongButton;
 	private ImageView loveSongButton;
 
-	private MediaPlayer mPlayer;
+	private MediaPlayer player;
 	private boolean isPlayingSong = false;
 	private Handler seekBarHandler;
-	private int mProcess = 0;// 消息队列中的进程号
+	private int process = 0;// 消息队列中的进程号
 	private int songProgress = 0;// 播放进度
 
 	private boolean isLoved = false;
@@ -61,8 +62,12 @@ public class HomePageFragment extends Fragment {
 		initView(view);
 
 		registerReceiver();
-		getSongData();
-//		setupSongList(); 测试用
+		if (i == 0) {
+			getSongData();
+			isDataLoaded = true;
+			// 测试用
+			// setupSongList();
+		}
 		setupPlaySongButton();
 		setupLoveSongButton();
 		setupShareSongButton();
@@ -70,12 +75,13 @@ public class HomePageFragment extends Fragment {
 
 		return view;
 	}
-	
+
 	@Override
 	public void onStop() {
 		stopPlaySong();
 		super.onStop();
 	}
+
 	private void registerReceiver() {
 		receiver = new StopPlaySongReceiver();
 		IntentFilter filter = new IntentFilter();
@@ -93,7 +99,7 @@ public class HomePageFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		activity.unregisterReceiver(receiver);
-		mPlayer.release();
+		player.release();
 		super.onDestroy();
 	}
 
@@ -123,12 +129,12 @@ public class HomePageFragment extends Fragment {
 				.findViewById(R.id.homepage_share_imageview);
 		loveSongButton = (ImageView) view
 				.findViewById(R.id.homepage_love_imageview);
-		mPlayer = new MediaPlayer();
+		player = new MediaPlayer();
 	}
 
 	private void getSongData() {
 		if (NetworkConnDetector.isNetworkConnected(activity)) {
-			HomeModel.getSongDataFromServer(new GetSongDataResultListener());
+			HomeModel.getSongDataFromServer(i, new GetSongDataResultListener());
 		} else {
 			// 加载本地数据 Or 显示“重新加载”,若重新加载则隐藏所有控件
 
@@ -136,10 +142,17 @@ public class HomePageFragment extends Fragment {
 		}
 	}
 
+	public void isGetData() {
+		if (!isDataLoaded) {
+			getSongData();
+			isDataLoaded = true;
+		}
+	}
+
 	private class GetSongDataResultListener implements HandleResultListener {
 		@Override
 		public void doResult(Object result) {
-			if (!getActivity().isFinishing() && !activity.isFinished()) {
+			if (!activity.isFinishing() && !activity.isFinished()) {
 				songInfo = HomeModel.getSongData((String) result);
 				setupSongList();
 			}
@@ -153,24 +166,24 @@ public class HomePageFragment extends Fragment {
 		contentTextView.setText(songInfo.getContent());
 		songNameTextView.setText(songInfo.getSongName());
 		try {
-			mPlayer.setDataSource(songInfo.getSongUrl());
-			mPlayer.setOnCompletionListener(new SongCompletionListener());
-			mPlayer.prepare();
+			player.setDataSource(songInfo.getSongUrl());
+			player.setOnCompletionListener(new SongCompletionListener());
+			player.prepare();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		HomeModel
 				.loadImage(songInfo.getImageUrl(), new SetBackgroundListener());
 
-//		测试用
-//		try {
-//			mPlayer = MediaPlayer.create(activity, R.raw.f);
-//			mPlayer.setOnCompletionListener(new SongCompletionListener());
-//			mPlayer.prepare();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		songSeekBar.setMax(mPlayer.getDuration() / 1000);
+		// 测试用
+		// try {
+		// mPlayer = MediaPlayer.create(activity, R.raw.f);
+		// mPlayer.setOnCompletionListener(new SongCompletionListener());
+		// mPlayer.prepare();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		songSeekBar.setMax(player.getDuration() / 1000);
 		seekBarHandler = new SeekBarHandler();
 	}
 
@@ -182,8 +195,8 @@ public class HomePageFragment extends Fragment {
 		@Override
 		public void onCompletion(MediaPlayer arg0) {
 			playSongButton.setImageResource(R.drawable.stop_button_not_press);
-			seekBarHandler.removeMessages(mProcess);
-			mPlayer.stop();
+			seekBarHandler.removeMessages(process);
+			player.stop();
 			isPlayingSong = false;
 			songSeekBar.setProgress(0);
 		}
@@ -231,16 +244,16 @@ public class HomePageFragment extends Fragment {
 					playSongButton
 							.setImageResource(R.drawable.stop_button_not_press);
 					isPlayingSong = false;
-					mPlayer.pause();
-					seekBarHandler.removeMessages(mProcess);
+					player.pause();
+					seekBarHandler.removeMessages(process);
 				} else {
 					if (NetworkConnDetector.isNetworkConnected(activity)) {
 						sendBroadcast();
 						playSongButton
 								.setImageResource(R.drawable.start_button_not_press);
 						isPlayingSong = true;
-						mPlayer.start();
-						seekBarHandler.sendEmptyMessage(mProcess);
+						player.start();
+						seekBarHandler.sendEmptyMessage(process);
 					} else {
 						Toast.makeText(activity, "网络未连接", Toast.LENGTH_SHORT)
 								.show();
@@ -315,22 +328,22 @@ public class HomePageFragment extends Fragment {
 		}
 	}
 
-	public void stopPlaySong() {
-		System.out.println("stopPlaySong");
+	private void stopPlaySong() {
 		playSongButton.setImageResource(R.drawable.stop_button_not_press);
 		isPlayingSong = false;
-		mPlayer.pause();
-		seekBarHandler.removeMessages(mProcess);
+		player.pause();
+		songSeekBar.setProgress(0);
+		seekBarHandler.removeMessages(process);
 	}
 
 	private class SeekBarHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.what == mProcess && songProgress < songSeekBar.getMax()) {
+			if (msg.what == process && songProgress < songSeekBar.getMax()) {
 				songProgress += 1;
 				songSeekBar.incrementProgressBy(1);
-				seekBarHandler.sendEmptyMessageDelayed(mProcess, 1000);
+				seekBarHandler.sendEmptyMessageDelayed(process, 1000);
 			}
 		}
 	}
@@ -339,7 +352,7 @@ public class HomePageFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Integer t = intent.getIntExtra("i", 0);
-			if (i != t && mPlayer.isPlaying())
+			if (i != t && player.isPlaying())
 				stopPlaySong();
 		}
 	}

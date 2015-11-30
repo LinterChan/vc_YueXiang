@@ -12,11 +12,19 @@ import com.linter.vc_yuexiang.http.ImageLoader;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 
 public class HomeModel {
-	public static void getSongDataFromServer(HandleResultListener listener) {
+	public static void getSongDataFromServer(int i,
+			HandleResultListener listener) {
+		Map<String, String> map = getRequestData(i);
 		String url = HttpClientUtil.URL_IP + "/GetSongDataServlet";
-		HttpRequestHelper helper = new HttpRequestHelper(url, null);
+		HttpRequestHelper helper = new HttpRequestHelper(url, map);
 		helper.setDoResultListener(listener);
 		helper.execute();
+	}
+
+	public static Map<String, String> getRequestData(int i) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("position", i + "");
+		return map;
 	}
 
 	public static void loadImage(String url, HandleResultListener listener) {
@@ -55,16 +63,11 @@ public class HomeModel {
 		SongInfo songInfo = null;
 		try {
 			JSONObject json = new JSONObject(result);
-			songInfo = new SongInfo();
-			songInfo.setSid(json.getString("sid"));
-			songInfo.setVol(json.getString("vol"));
-			songInfo.setWriter(json.getString("writer"));
-			songInfo.setTitle(json.getString("title"));
-			songInfo.setContent(json.getString("content"));
-			songInfo.setSongName(json.getString("songname"));
-			songInfo.setSinger(json.getString("singer"));
-			songInfo.setSongUrl(json.getString("songurl"));
-			songInfo.setImageUrl(json.getString("imageurl"));
+			songInfo = new SongInfo(json.getString("sid"),
+					json.getString("vol"), json.getString("writer"),
+					json.getString("title"), json.getString("content"),
+					json.getString("songname"), json.getString("singer"),
+					json.getString("songurl"), json.getString("imageurl"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -17,9 +17,9 @@ import com.example.vc_yuexiang.R;
 public class HomeActivity extends FragmentActivity {
 	private static final int PAGE_NUM = 3;
 	private boolean isFinished = false;
-	private ViewPager mViewPager;
-	private List<HomePageFragment> mFragments;
-	private PagerAdapter mAdapter;
+	private ViewPager viewPager;
+	private List<HomePageFragment> fragments;
+	private PagerAdapter pagerAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +37,24 @@ public class HomeActivity extends FragmentActivity {
 	}
 
 	private void initFragments() {
-		mFragments = new ArrayList<HomePageFragment>();
+		fragments = new ArrayList<HomePageFragment>();
 		for (int i = 0; i < PAGE_NUM; i++) {
 			HomePageFragment fragment = new HomePageFragment();
 			fragment.setPosition(i);
-			mFragments.add(fragment);
+			fragments.add(fragment);
 		}
 	}
 
 	private void initView() {
-		mViewPager = (ViewPager) findViewById(R.id.home_homepage_viewpager);
+		viewPager = (ViewPager) findViewById(R.id.home_homepage_viewpager);
 	}
 
 	private void setupViewPager() {
-		mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),
-				mFragments);
-		mViewPager.setOffscreenPageLimit(2);
-		mViewPager.setAdapter(mAdapter);
+		pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),
+				fragments);
+		viewPager.setOffscreenPageLimit(2);
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.setOnPageChangeListener(new PageChangeListener());
 	}
 
 	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -79,20 +80,21 @@ public class HomeActivity extends FragmentActivity {
 			return fragments.size();
 		}
 	}
-	private class PageChangeListener implements OnPageChangeListener{
+
+	private class PageChangeListener implements OnPageChangeListener {
 		@Override
 		public void onPageScrollStateChanged(int i) {
-			
+
 		}
 
 		@Override
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
-			
+
 		}
 
 		@Override
 		public void onPageSelected(int arg0) {
-			
+			fragments.get(arg0).isGetData();
 		}
 	}
 }
