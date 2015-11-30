@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,7 +35,7 @@ public class HomePageFragment extends Fragment {
 
 	private SongInfo songInfo;
 	private ImageView backgroundImageView;
-	private TextView vol_writerTextView;
+	private TextView volWriterTextView;
 	private TextView titleTextView;
 	private TextView contentTextView;
 	private SeekBar songSeekBar;
@@ -45,7 +44,6 @@ public class HomePageFragment extends Fragment {
 	private ImageView shareSongButton;
 	private ImageView loveSongButton;
 
-	private MediaPlayer player;
 	private boolean isPlayingSong = false;
 	private Handler seekBarHandler;
 	private int process = 0;// 消息队列中的进程号
@@ -60,13 +58,10 @@ public class HomePageFragment extends Fragment {
 				false);
 		setParentActivity((HomeActivity) getActivity());
 		initView(view);
-
 		registerReceiver();
 		if (i == 0) {
 			getSongData();
 			isDataLoaded = true;
-			// 测试用
-			// setupSongList();
 		}
 		setupPlaySongButton();
 		setupLoveSongButton();
@@ -89,17 +84,9 @@ public class HomePageFragment extends Fragment {
 		activity.registerReceiver(receiver, filter);
 	}
 
-	private void sendBroadcast() {
-		Intent intent = new Intent(
-				"android.intent.action.STOPPLAYSONG_BROADCAST");
-		intent.putExtra("i", i);
-		activity.sendBroadcast(intent);
-	}
-
 	@Override
 	public void onDestroy() {
 		activity.unregisterReceiver(receiver);
-		player.release();
 		super.onDestroy();
 	}
 
@@ -114,7 +101,7 @@ public class HomePageFragment extends Fragment {
 	private void initView(View view) {
 		backgroundImageView = (ImageView) view
 				.findViewById(R.id.homepage_background_imageview);
-		vol_writerTextView = (TextView) view
+		volWriterTextView = (TextView) view
 				.findViewById(R.id.homepage_vol_writer_textview);
 		titleTextView = (TextView) view
 				.findViewById(R.id.homepage_title_textview);
@@ -129,7 +116,6 @@ public class HomePageFragment extends Fragment {
 				.findViewById(R.id.homepage_share_imageview);
 		loveSongButton = (ImageView) view
 				.findViewById(R.id.homepage_love_imageview);
-		player = new MediaPlayer();
 	}
 
 	private void getSongData() {
@@ -160,29 +146,19 @@ public class HomePageFragment extends Fragment {
 	}
 
 	private void setupSongList() {
-		vol_writerTextView.setText(songInfo.getVol() + " "
+		volWriterTextView.setText(songInfo.getVol() + " "
 				+ songInfo.getWriter());
 		titleTextView.setText(songInfo.getTitle());
 		contentTextView.setText(songInfo.getContent());
 		songNameTextView.setText(songInfo.getSongName());
+		MediaPlayer player = new MediaPlayer();
 		try {
 			player.setDataSource(songInfo.getSongUrl());
-			player.setOnCompletionListener(new SongCompletionListener());
-			player.prepare();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		HomeModel
 				.loadImage(songInfo.getImageUrl(), new SetBackgroundListener());
-
-		// 测试用
-		// try {
-		// mPlayer = MediaPlayer.create(activity, R.raw.f);
-		// mPlayer.setOnCompletionListener(new SongCompletionListener());
-		// mPlayer.prepare();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
 		songSeekBar.setMax(player.getDuration() / 1000);
 		seekBarHandler = new SeekBarHandler();
 	}
@@ -191,21 +167,10 @@ public class HomePageFragment extends Fragment {
 		songSeekBar.setEnabled(false);
 	}
 
-	private class SongCompletionListener implements OnCompletionListener {
-		@Override
-		public void onCompletion(MediaPlayer arg0) {
-			playSongButton.setImageResource(R.drawable.stop_button_not_press);
-			seekBarHandler.removeMessages(process);
-			player.stop();
-			isPlayingSong = false;
-			songSeekBar.setProgress(0);
-		}
-	}
-
 	private class SetBackgroundListener implements HandleResultListener {
 		@Override
 		public void doResult(Object result) {
-			if (!getActivity().isFinishing() && !activity.isFinished()) {
+			if (!activity.isFinishing() && !activity.isFinished()) {
 				Bitmap bitmap = (Bitmap) result;
 				backgroundImageView.setImageBitmap(bitmap);
 			}
@@ -244,15 +209,14 @@ public class HomePageFragment extends Fragment {
 					playSongButton
 							.setImageResource(R.drawable.stop_button_not_press);
 					isPlayingSong = false;
-					player.pause();
+					startService("stop");
 					seekBarHandler.removeMessages(process);
 				} else {
 					if (NetworkConnDetector.isNetworkConnected(activity)) {
-						sendBroadcast();
 						playSongButton
 								.setImageResource(R.drawable.start_button_not_press);
 						isPlayingSong = true;
-						player.start();
+						startService("start");
 						seekBarHandler.sendEmptyMessage(process);
 					} else {
 						Toast.makeText(activity, "网络未连接", Toast.LENGTH_SHORT)
@@ -263,6 +227,14 @@ public class HomePageFragment extends Fragment {
 			}
 			return false;
 		}
+	}
+
+	private void startService(String operation) {
+		Intent intent = new Intent();
+		intent.putExtra("songurl", songInfo.getSongUrl());
+		intent.putExtra("position", i);
+		intent.putExtra("operation", operation);
+		activity.startService(intent);
 	}
 
 	private class LoveSongButtonListener implements OnClickListener {
@@ -331,9 +303,9 @@ public class HomePageFragment extends Fragment {
 	private void stopPlaySong() {
 		playSongButton.setImageResource(R.drawable.stop_button_not_press);
 		isPlayingSong = false;
-		player.pause();
 		songSeekBar.setProgress(0);
 		seekBarHandler.removeMessages(process);
+		songProgress = 0;
 	}
 
 	private class SeekBarHandler extends Handler {
@@ -352,7 +324,7 @@ public class HomePageFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Integer t = intent.getIntExtra("i", 0);
-			if (i != t && player.isPlaying())
+			if (i == t)
 				stopPlaySong();
 		}
 	}
