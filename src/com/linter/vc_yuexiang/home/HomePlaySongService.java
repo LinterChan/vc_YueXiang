@@ -82,7 +82,7 @@ public class HomePlaySongService extends Service {
 	private class CompletionListener implements OnCompletionListener{
 		@Override
 		public void onCompletion(MediaPlayer arg0) {
-			//停止以播完的音乐
+			//停止已播完的音乐
 			sendCast();
 		}
 	}

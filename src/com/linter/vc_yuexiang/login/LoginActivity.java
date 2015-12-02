@@ -1,5 +1,7 @@
 package com.linter.vc_yuexiang.login;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.common.ResultConst;
+import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 import com.linter.vc_yuexiang.register.RegisterModel.CorrectnessListener;
@@ -23,6 +26,9 @@ public class LoginActivity extends BaseActivity {
 	private EditText usernameEditText;
 	private EditText passwordEditText;
 	private Button loginButton;
+
+	private String username = null;
+	private String password = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +45,11 @@ public class LoginActivity extends BaseActivity {
 		loginButton = (Button) findViewById(R.id.login_login_button);
 	}
 
+	public static void start(Activity activity) {
+		Intent intent = new Intent(activity, LoginActivity.class);
+		activity.startActivity(intent);
+	}
+
 	private void setupLoginButton() {
 		loginButton.setOnClickListener(new LoginButtonListener());
 	}
@@ -47,9 +58,10 @@ public class LoginActivity extends BaseActivity {
 		@Override
 		public void onClick(View arg0) {
 			if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
-				LoginModel.requestToServer(usernameEditText.getText()
-						.toString().trim(), passwordEditText.getText()
-						.toString().trim(), new LoginResultListener(),
+				username = usernameEditText.getText().toString().trim();
+				password = passwordEditText.getText().toString().trim();
+				LoginModel.requestToServer(username, password,
+						new LoginResultListener(),
 						new LoginCorrectnessListener());
 			} else {
 				Toast.makeText(LoginActivity.this, "网络未连接", Toast.LENGTH_SHORT)
@@ -72,8 +84,10 @@ public class LoginActivity extends BaseActivity {
 							Toast.LENGTH_SHORT).show();
 					break;
 				case ResultConst.LOGIN_SUCCESS:
-					// 跳转到HomeActivity主页
-
+					SharedPreferenceUtil.saveLoginFlag(getApplicationContext(),
+							true);
+					SharedPreferenceUtil.saveLoginInfo(getApplicationContext(),
+							username);
 					finish();
 					break;
 				case ResultConst.LOGIN_FAIL:

@@ -1,5 +1,7 @@
 package com.linter.vc_yuexiang.register;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.common.ResultConst;
+import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 import com.linter.vc_yuexiang.register.RegisterModel.CorrectnessListener;
@@ -24,6 +27,9 @@ public class RegisterActivity extends BaseActivity {
 	private EditText passwordEditText;
 	private Button registerButton;
 
+	private String username = null;
+	private String password = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,6 +37,11 @@ public class RegisterActivity extends BaseActivity {
 
 		initView();
 		setupRegisterButton();
+	}
+
+	public static void start(Activity activity) {
+		Intent intent = new Intent(activity, RegisterActivity.class);
+		activity.startActivity(intent);
 	}
 
 	private void initView() {
@@ -47,9 +58,10 @@ public class RegisterActivity extends BaseActivity {
 		@Override
 		public void onClick(View arg0) {
 			if (NetworkConnDetector.isNetworkConnected(getApplicationContext())) {
-				RegisterModel.requestToServer(usernameEditText.getText()
-						.toString().trim(), passwordEditText.getText()
-						.toString().trim(), new RegisterResultListener(),
+				username = usernameEditText.getText().toString().trim();
+				password = passwordEditText.getText().toString().trim();
+				RegisterModel.requestToServer(username, password,
+						new RegisterResultListener(),
 						new RegisterCorrectnessListener());
 			} else {
 				Toast.makeText(RegisterActivity.this, "网络未连接",
@@ -72,8 +84,10 @@ public class RegisterActivity extends BaseActivity {
 							Toast.LENGTH_SHORT).show();
 					break;
 				case ResultConst.REG_SUCCESS:
-					// 跳转到HomeActivity
-
+					SharedPreferenceUtil.saveLoginFlag(getApplicationContext(),
+							true);
+					SharedPreferenceUtil.saveLoginInfo(getApplicationContext(),
+							username);
 					finish();
 					break;
 				case ResultConst.REG_FAIL:

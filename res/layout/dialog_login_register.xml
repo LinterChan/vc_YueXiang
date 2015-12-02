@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_shape"
+    android:padding="20dp" >
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="亲："
+        android:textColor="@color/dialog_textview"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/dialog_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_title"
+        android:paddingBottom="10dp"
+        android:paddingTop="9dp"
+        android:text="登录就可以使用这个功能啦~"
+        android:textColor="@color/dialog_textview"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/dialog_register_button"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@color/dialog_button_register_bg"
+            android:text="注册"
+            android:textColor="@color/dialog_button_register_text"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/dialog_login_button"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@color/dialog_button_login_bg"
+            android:text="登录"
+            android:textColor="@color/dialog_button_login_text"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</RelativeLayout>

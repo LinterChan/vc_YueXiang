@@ -32,6 +32,8 @@
 
         <service android:name="com.linter.vc_yuexiang.home.HomePlaySongService" >
         </service>
+        <service android:name="com.linter.vc_yuexiang.home.HomePlaySongService2" >
+        </service>
     </application>
 
 </manifest>

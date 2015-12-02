@@ -1,15 +1,10 @@
 package com.linter.vc_yuexiang.home;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,22 +17,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.common.LazyFragment;
 import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.common.SongInfo;
+import com.linter.vc_yuexiang.home.HomePlaySongService2.UpdateUIAfterStopSongListener;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 /**
- * 实现： 1.监听滑动，实现滑动到某页加载数据的功能 2.使用startService开启服务 3.使用广播实现Activity和Service的交互
+ * 实现： 1.使用懒加载实现滑动到某页加载数据的功能 2.使用bindService开启服务 3.使用回调实现Activity和Service的交互
  * 
  * @author LinterChen linterchen@vanchu.net
  * @date 2015-12-2
  */
-public class HomePageFragment extends Fragment {
+public class HomePageFragment2 extends LazyFragment {
 	private int i;
-	private boolean isDataLoaded = false;
+	private boolean isPrepaerd = false;
 	private HomeActivity activity;
-	private StopPlaySongReceiver receiver;
 
 	private SongInfo songInfo;
 	private ImageView backgroundImageView;
@@ -51,11 +47,14 @@ public class HomePageFragment extends Fragment {
 	private ImageView loveSongButton;
 
 	private boolean isPlayingSong = false;
-	private Handler seekBarHandler = new SeekBarHandler();;
+	private Handler seekBarHandler = new SeekBarHandler();
 	private int process = 0;// 消息队列中的进程号
 	private int songProgress = 0;// 播放进度
 
 	private boolean isLoved = false;
+
+	private HomePlaySongService2 songService = null;
+	private UpdateUIAfterStopSongListener listener;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,11 +63,10 @@ public class HomePageFragment extends Fragment {
 				false);
 		setParentActivity((HomeActivity) getActivity());
 		initView(view);
-		registerReceiver();
-		if (i == 0) {
-			getSongData();
-			isDataLoaded = true;
-		}
+
+		isPrepaerd = true;
+		lazyLoad();
+		initUpdateUIListener();
 		setupPlaySongButton();
 		setupLoveSongButton();
 		setupShareSongButton();
@@ -77,27 +75,39 @@ public class HomePageFragment extends Fragment {
 		return view;
 	}
 
+	private void initUpdateUIListener() {
+		listener = new UpdateUIAfterStopSongListener() {
+			@Override
+			public void updateUI() {
+				stopPlaySong();
+			}
+		};
+	}
+
 	@Override
 	public void onStop() {
 		stopPlaySong();
 		super.onStop();
 	}
 
-	private void registerReceiver() {
-		receiver = new StopPlaySongReceiver();
-		IntentFilter filter = new IntentFilter();
-		filter.addAction("android.intent.action.STOPPLAYSONG_BROADCAST");
-		activity.registerReceiver(receiver, filter);
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 
 	@Override
-	public void onDestroy() {
-		activity.unregisterReceiver(receiver);
-		super.onDestroy();
+	protected void lazyLoad() {
+		if (isVisible && isPrepaerd) {
+			getSongData();
+		}
 	}
 
 	public void setPosition(int i) {
 		this.i = i;
+	}
+
+	public void setService(HomePlaySongService2 songService) {
+		this.songService = songService;
 	}
 
 	private void setParentActivity(HomeActivity activity) {
@@ -125,19 +135,13 @@ public class HomePageFragment extends Fragment {
 	}
 
 	private void getSongData() {
+		System.out.println("getSongData");
 		if (NetworkConnDetector.isNetworkConnected(activity)) {
 			HomeModel.getSongDataFromServer(i, new GetSongDataResultListener());
 		} else {
 			// 加载本地数据 Or 显示“重新加载”,若重新加载则隐藏所有控件
 
 			Toast.makeText(getActivity(), "网络未连接", Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	public void isGetData() {
-		if (!isDataLoaded) {
-			getSongData();
-			isDataLoaded = true;
 		}
 	}
 
@@ -214,14 +218,16 @@ public class HomePageFragment extends Fragment {
 					playSongButton
 							.setImageResource(R.drawable.stop_button_not_press);
 					isPlayingSong = false;
-					startService("stop");
+					songService.stopSong(songInfo.getSongUrl());
 					seekBarHandler.removeMessages(process);
 				} else {
 					if (NetworkConnDetector.isNetworkConnected(activity)) {
 						playSongButton
 								.setImageResource(R.drawable.start_button_not_press);
 						isPlayingSong = true;
-						startService("start");
+						songService.setupPlayer(songInfo.getSongUrl());
+						songService.setUpdateUIAfterStopSongListener(listener);
+						songService.playSong();
 						seekBarHandler.sendEmptyMessage(process);
 					} else {
 						Toast.makeText(activity, "网络未连接", Toast.LENGTH_SHORT)
@@ -232,14 +238,6 @@ public class HomePageFragment extends Fragment {
 			}
 			return false;
 		}
-	}
-
-	private void startService(String operation) {
-		Intent intent = new Intent();
-		intent.putExtra("songurl", songInfo.getSongUrl());
-		intent.putExtra("position", i);
-		intent.putExtra("operation", operation);
-		activity.startService(intent);
 	}
 
 	private class LoveSongButtonListener implements OnClickListener {
@@ -258,8 +256,6 @@ public class HomePageFragment extends Fragment {
 					}
 				} else {
 					activity.showDialog();
-					// Toast.makeText(activity, "请先登录",
-					// Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				Toast.makeText(activity, "网络未连接", Toast.LENGTH_SHORT).show();
@@ -326,15 +322,6 @@ public class HomePageFragment extends Fragment {
 				songSeekBar.incrementProgressBy(1);
 				seekBarHandler.sendEmptyMessageDelayed(process, 1000);
 			}
-		}
-	}
-
-	private class StopPlaySongReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Integer t = intent.getIntExtra("i", 0);
-			if (i == t)
-				stopPlaySong();
 		}
 	}
 

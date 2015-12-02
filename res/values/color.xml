@@ -8,4 +8,11 @@
     <!-- 登录 -->
     <color name="login_bg_color">#B2DFEE</color>
     <color name="login_button_text_color">#ffffff</color>
+    <!-- 登录注册对话框 -->
+    <color name="dialog_bg_color">#FFFAF0</color>
+    <color name="dialog_button_login_text">#ffffff</color>
+    <color name="dialog_button_register_text">#3B3E45</color>
+    <color name="dialog_button_login_bg">#7EC0EE</color>
+    <color name="dialog_button_register_bg">#FFA54F</color>
+    <color name="dialog_textview">#2B2B2B</color>
 </resources>
