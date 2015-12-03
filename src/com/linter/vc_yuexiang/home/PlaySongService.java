@@ -4,14 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Binder;
 import android.os.IBinder;
 import android.os.Process;
+import android.os.RemoteException;
 
 public class PlaySongService extends Service {
 	private MediaPlayer player;
 	private String songUrl = "";
-	private final IBinder binder = new LocalBinder();
 	private OnStopSongListener listener;
 
 	@Override
@@ -19,46 +18,60 @@ public class PlaySongService extends Service {
 		super.onCreate();
 		initPlayer();
 		int pid = Process.myPid();
-		System.out.println("service pid:"+pid);
+		System.out.println("service pid:" + pid);
 	}
 
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return binder;
+		return new AidlServiceImpl();
 	}
 
 	private void initPlayer() {
 		player = new MediaPlayer();
 	}
 
-	public void setupPlayer(String songUrl) {
-		if (player.isPlaying()) {
-			player.stop();
-		}
-		if (!this.songUrl.equals(songUrl)) {
-			// 若不是同一首歌/还没设置url
-			if (listener != null) {
-				listener.onStopSong();
+	private class AidlServiceImpl extends AidlService.Stub {
+		@Override
+		public void setupPlayer(String pSongUrl) throws RemoteException {
+			if (player.isPlaying()) {
+				player.stop();
 			}
-			try {
-				player.setDataSource(songUrl);
-				player.setOnCompletionListener(new CompletionListener());
-				player.prepare();
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (!songUrl.equals(pSongUrl)) {
+				// 若不是同一首歌/还没设置url
+				if (listener != null) {
+					listener.onStopSong();
+				}
+				try {
+					player.setDataSource(pSongUrl);
+					player.setOnCompletionListener(new CompletionListener());
+					player.prepare();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				songUrl = pSongUrl;
 			}
-			this.songUrl = songUrl;
 		}
-	}
 
-	public void playSong() {
-		player.start();
-	}
-
-	public void stopSong(String songUrl) {
-		if (player.isPlaying() && this.songUrl.equals(songUrl)) {
-			player.pause();
+		@Override
+		public void playSong() throws RemoteException {
+			player.start();
 		}
+
+		@Override
+		public void stopSong(String pSongUrl) throws RemoteException {
+			if (player.isPlaying() && songUrl.equals(pSongUrl)) {
+				player.pause();
+			}
+		}
+
+		@Override
+		public void setOnStopSongListener(OnStopSongListener pListener)
+				throws RemoteException {
+			if (listener != pListener) {
+				listener = pListener;
+			}
+		}
+
 	}
 
 	@Override
@@ -67,30 +80,18 @@ public class PlaySongService extends Service {
 		super.onDestroy();
 	}
 
-	public class LocalBinder extends Binder {
-		public PlaySongService getService() {
-			return PlaySongService.this;
-		}
-	}
-
 	private class CompletionListener implements OnCompletionListener {
 		@Override
 		public void onCompletion(MediaPlayer arg0) {
 			player.stop();
 			// 回调方法：更新界面
 			if (listener != null) {
-				listener.onStopSong();
+				try {
+					listener.onStopSong();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
 			}
-		}
-	}
-
-	public interface OnStopSongListener {
-		void onStopSong();
-	}
-
-	public void setOnStopSongListener(OnStopSongListener listener) {
-		if (this.listener != listener) {
-			this.listener = listener;
 		}
 	}
 }

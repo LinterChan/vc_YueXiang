@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,13 +21,10 @@ import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.LazyFragment;
 import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.common.SongInfo;
-import com.linter.vc_yuexiang.home.PlaySongService.OnStopSongListener;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 /**
- * 实现： 1.使用懒加载实现滑动到某页加载数据的功能 2.使用bindService开启服务 3.使用回调实现Activity和Service的交互
- * 
  * @author LinterChen linterchen@vanchu.net
  * @date 2015-12-2
  */
@@ -53,7 +51,7 @@ public class HomePageFragment extends LazyFragment {
 
 	private boolean isLoved = false;
 
-	private PlaySongService songService = null;
+	private AidlService songService = null;
 	private OnStopSongListener listener;
 
 	@Override
@@ -76,9 +74,9 @@ public class HomePageFragment extends LazyFragment {
 	}
 
 	private void initUpdateUIListener() {
-		listener = new OnStopSongListener() {
+		listener = new OnStopSongListener.Stub() {
 			@Override
-			public void onStopSong() {
+			public void onStopSong() throws RemoteException {
 				stopPlaySong();
 			}
 		};
@@ -106,7 +104,7 @@ public class HomePageFragment extends LazyFragment {
 		this.i = i;
 	}
 
-	public void setService(PlaySongService songService) {
+	public void setService(AidlService songService) {
 		this.songService = songService;
 	}
 
@@ -218,16 +216,24 @@ public class HomePageFragment extends LazyFragment {
 					playSongButton
 							.setImageResource(R.drawable.stop_button_not_press);
 					isPlayingSong = false;
-					songService.stopSong(songInfo.getSongUrl());
+					try {
+						songService.stopSong(songInfo.getSongUrl());
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 					seekBarHandler.removeMessages(process);
 				} else {
 					if (NetworkConnDetector.isNetworkConnected(activity)) {
 						playSongButton
 								.setImageResource(R.drawable.start_button_not_press);
 						isPlayingSong = true;
-						songService.setupPlayer(songInfo.getSongUrl());
-						songService.setOnStopSongListener(listener);
-						songService.playSong();
+						try {
+							songService.setupPlayer(songInfo.getSongUrl());
+							songService.setOnStopSongListener(listener);
+							songService.playSong();
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
 						seekBarHandler.sendEmptyMessage(process);
 					} else {
 						Toast.makeText(activity, "网络未连接", Toast.LENGTH_SHORT)

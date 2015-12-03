@@ -38,7 +38,7 @@ public class HomeActivity extends FragmentActivity {
 	private List<HomePageFragment> fragments;
 	private PagerAdapter pagerAdapter;
 	private boolean isBound = false;
-	private PlaySongService songService = null;
+	private AidlService songService = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class HomeActivity extends FragmentActivity {
 
 		setupViewPager();
 		int pid = Process.myPid();
-		System.out.println("Activity pid:"+pid);
+		System.out.println("Activity pid:" + pid);
 	}
 
 	@Override
@@ -82,7 +82,6 @@ public class HomeActivity extends FragmentActivity {
 				fragments);
 		viewPager.setOffscreenPageLimit(2);
 		viewPager.setAdapter(pagerAdapter);
-		// viewPager.setOnPageChangeListener(new PageChangeListener());
 	}
 
 	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -109,27 +108,8 @@ public class HomeActivity extends FragmentActivity {
 		}
 	}
 
-	// 滑动监听，实现滑动某页加载数据时使用
-	// private class PageChangeListener implements OnPageChangeListener {
-	// @Override
-	// public void onPageScrollStateChanged(int i) {
-	//
-	// }
-	//
-	// @Override
-	// public void onPageScrolled(int arg0, float arg1, int arg2) {
-	//
-	// }
-	//
-	// @Override
-	// public void onPageSelected(int arg0) {
-	// fragments.get(arg0).isGetData();
-	// }
-	// }
-
 	private void bindService() {
-		Intent intent = new Intent(HomeActivity.this,
-				PlaySongService.class);
+		Intent intent = new Intent(HomeActivity.this, PlaySongService.class);
 		bindService(intent, conn, Context.BIND_AUTO_CREATE);
 		isBound = true;
 	}
@@ -143,8 +123,7 @@ public class HomeActivity extends FragmentActivity {
 
 	private ServiceConnection conn = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			songService = ((PlaySongService.LocalBinder) service)
-					.getService();
+			songService = AidlService.Stub.asInterface(service);
 			for (int i = 0; i < PAGE_NUM; i++) {
 				fragments.get(i).setService(songService);
 			}
