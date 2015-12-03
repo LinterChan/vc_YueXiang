@@ -25,13 +25,16 @@
         <activity android:name="com.linter.vc_yuexiang.home.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service
             android:name="com.linter.vc_yuexiang.home.PlaySongService"
             android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.linter.vc_yuexiang.home.PlaySongService" />
+            </intent-filter>
         </service>
     </application>
 

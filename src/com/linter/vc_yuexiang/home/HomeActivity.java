@@ -109,7 +109,7 @@ public class HomeActivity extends FragmentActivity {
 	}
 
 	private void bindService() {
-		Intent intent = new Intent(HomeActivity.this, PlaySongService.class);
+		Intent intent = new Intent("com.linter.vc_yuexiang.home.PlaySongService");
 		bindService(intent, conn, Context.BIND_AUTO_CREATE);
 		isBound = true;
 	}
