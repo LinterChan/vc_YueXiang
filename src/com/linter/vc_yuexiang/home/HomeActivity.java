@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -34,10 +35,10 @@ public class HomeActivity extends FragmentActivity {
 	private static final int PAGE_NUM = 3;
 	private boolean isFinished = false;
 	private ViewPager viewPager;
-	private List<HomePageFragment2> fragments;
+	private List<HomePageFragment> fragments;
 	private PagerAdapter pagerAdapter;
 	private boolean isBound = false;
-	private HomePlaySongService2 songService = null;
+	private PlaySongService songService = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,8 @@ public class HomeActivity extends FragmentActivity {
 		initView();
 
 		setupViewPager();
+		int pid = Process.myPid();
+		System.out.println("Activity pid:"+pid);
 	}
 
 	@Override
@@ -62,9 +65,9 @@ public class HomeActivity extends FragmentActivity {
 	}
 
 	private void initFragments() {
-		fragments = new ArrayList<HomePageFragment2>();
+		fragments = new ArrayList<HomePageFragment>();
 		for (int i = 0; i < PAGE_NUM; i++) {
-			HomePageFragment2 fragment = new HomePageFragment2();
+			HomePageFragment fragment = new HomePageFragment();
 			fragment.setPosition(i);
 			fragments.add(fragment);
 		}
@@ -83,14 +86,14 @@ public class HomeActivity extends FragmentActivity {
 	}
 
 	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-		private List<HomePageFragment2> fragments;
+		private List<HomePageFragment> fragments;
 
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		public MyFragmentPagerAdapter(FragmentManager fm,
-				List<HomePageFragment2> fragments) {
+				List<HomePageFragment> fragments) {
 			super(fm);
 			this.fragments = fragments;
 		}
@@ -126,7 +129,7 @@ public class HomeActivity extends FragmentActivity {
 
 	private void bindService() {
 		Intent intent = new Intent(HomeActivity.this,
-				HomePlaySongService2.class);
+				PlaySongService.class);
 		bindService(intent, conn, Context.BIND_AUTO_CREATE);
 		isBound = true;
 	}
@@ -140,7 +143,7 @@ public class HomeActivity extends FragmentActivity {
 
 	private ServiceConnection conn = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			songService = ((HomePlaySongService2.LocalBinder) service)
+			songService = ((PlaySongService.LocalBinder) service)
 					.getService();
 			for (int i = 0; i < PAGE_NUM; i++) {
 				fragments.get(i).setService(songService);
