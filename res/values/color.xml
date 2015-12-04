@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 注册 -->
+
+    <!-- 注册Activity -->
     <color name="register_bg_color">#B2DFEE</color>
     <color name="register_button_color_1">#BFBFBF</color>
     <color name="register_button_color_2">#ADADAD</color>
     <color name="register_button_text_color">#ffffff</color>
-    <!-- 登录 -->
+    <!-- 登录Activity -->
     <color name="login_bg_color">#B2DFEE</color>
     <color name="login_button_text_color">#ffffff</color>
     <!-- 登录注册对话框 -->
@@ -15,4 +16,13 @@
     <color name="dialog_button_login_bg">#7EC0EE</color>
     <color name="dialog_button_register_bg">#FFA54F</color>
     <color name="dialog_textview">#2B2B2B</color>
+    <!-- 电台Activity -->
+    <color name="radio_titlebar_bg">#3B3E45</color>
+    <color name="radio_button_return_color_1">#00000000</color>
+    <color name="radio_button_return_color_2">#3f000000</color>
+    <color name="radio_textview_title_selected">#7EC0EE</color>
+    <color name="radio_textview_title_notselected">#999999</color>
+    <color name="radio_listview_item_bg_selected">#F0F0F0</color>
+    <color name="radio_listview_item_bg_notselected">#FFFAF0</color>
+
 </resources>

@@ -29,7 +29,7 @@ public class HomeModel {
 
 	public static void loadImage(String url, HandleResultListener listener) {
 		ImageLoader loader = new ImageLoader(url);
-		loader.setDoResultListener(listener);
+		loader.setHandleResultListener(listener);
 		loader.execute();
 	}
 

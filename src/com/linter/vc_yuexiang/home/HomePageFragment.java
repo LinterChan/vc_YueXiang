@@ -91,11 +91,6 @@ public class HomePageFragment extends LazyFragment {
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
-	@Override
 	protected void lazyLoad() {
 		if (isVisible && isPrepaerd) {
 			getSongData();

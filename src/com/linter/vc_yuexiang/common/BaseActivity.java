@@ -1,8 +1,8 @@
 package com.linter.vc_yuexiang.common;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 
-public class BaseActivity extends Activity {
+public class BaseActivity extends FragmentActivity {
 	private boolean isDestroyed = false;
 
 	@Override
@@ -11,7 +11,7 @@ public class BaseActivity extends Activity {
 		super.onDestroy();
 	}
 	
-	protected boolean isFinished(){
+	public boolean isFinished(){
 		return isDestroyed;
 	}
 }

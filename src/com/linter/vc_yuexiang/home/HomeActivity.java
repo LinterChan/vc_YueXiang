@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Process;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -28,12 +27,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.login.LoginActivity;
 import com.linter.vc_yuexiang.register.RegisterActivity;
 
-public class HomeActivity extends FragmentActivity {
+public class HomeActivity extends BaseActivity {
 	private static final int PAGE_NUM = 3;
-	private boolean isFinished = false;
 	private ViewPager viewPager;
 	private List<HomePageFragment> fragments;
 	private PagerAdapter pagerAdapter;
@@ -58,10 +57,6 @@ public class HomeActivity extends FragmentActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		unBindService();
-	}
-
-	protected boolean isFinished() {
-		return isFinished;
 	}
 
 	private void initFragments() {

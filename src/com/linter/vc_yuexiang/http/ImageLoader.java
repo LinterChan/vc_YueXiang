@@ -19,7 +19,7 @@ public class ImageLoader {
 		this.url = url;
 	}
 
-	public void setDoResultListener(HandleResultListener listener) {
+	public void setHandleResultListener(HandleResultListener listener) {
 		this.listener = listener;
 	}
 
