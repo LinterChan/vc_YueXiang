@@ -65,6 +65,7 @@ public class HomePageFragment extends LazyFragment {
 		initView(view);
 
 		isPrepaerd = true;
+		setupSongList();
 		lazyLoad();
 		initUpdateUIListener();
 		setupPlaySongButton();
@@ -162,6 +163,13 @@ public class HomePageFragment extends LazyFragment {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		// 测试
+		// String[] testUrl = new String[] {
+		// "http://img1.imgtn.bdimg.com/it/u=1277545764,1877374477&fm=21&gp=0.jpg",
+		// "http://www.33lc.com/article/UploadPic/2012-8/201281010265276953.jpg",
+		// "http://hiphotos.baidu.com/90008com/pic/item/fdaef1ea2eea7ff3d539c904.jpeg"
+		// };
+		// HomeModel.loadImage(testUrl[i], new SetBackgroundListener());
 		HomeModel
 				.loadImage(songInfo.getImageUrl(), new SetBackgroundListener());
 		songSeekBar.setMax(player.getDuration() / 1000);

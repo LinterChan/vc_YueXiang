@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import com.linter.vc_yuexiang.common.SongInfo;
 import com.linter.vc_yuexiang.http.HttpClientUtil;
 import com.linter.vc_yuexiang.http.HttpRequestHelper;
-import com.linter.vc_yuexiang.http.ImageLoader;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
+import com.linter.vc_yuexiang.http.ImageLoader;
 
 public class HomeModel {
 	public static void getSongDataFromServer(int i,
@@ -28,9 +28,8 @@ public class HomeModel {
 	}
 
 	public static void loadImage(String url, HandleResultListener listener) {
-		ImageLoader loader = new ImageLoader(url);
-		loader.setHandleResultListener(listener);
-		loader.execute();
+		ImageLoader loader = new ImageLoader();
+		loader.loadImage(url, listener);
 	}
 
 	public static void loveSong(String sid, String username,

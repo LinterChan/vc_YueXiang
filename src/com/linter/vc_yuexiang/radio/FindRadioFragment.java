@@ -12,18 +12,23 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
+import com.linter.vc_yuexiang.http.ImageLoader;
 
 public class FindRadioFragment extends Fragment {
+	private boolean firstFlag = true;
 	private RadioActivity activity;
 	private ListView radioListView;
 	private List<Map<String, String>> listData;
 	private RadioListAdapter listAdapter;
+	private ImageLoader imageLoader = new ImageLoader();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,10 +53,30 @@ public class FindRadioFragment extends Fragment {
 
 	private void initListData() {
 		listData = new ArrayList<Map<String, String>>();
-		String photoUrl = "http://www.33lc.com/article/UploadPic/2012-8/201281010265276953.jpg";
-		for (int i = 0; i < 100; i++) {
+		String[] photoUrl = new String[] {
+				"http://img2.imgtn.bdimg.com/it/u=249296375,4206828661&fm=21&gp=0.jpg",
+				"http://b.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=76a81c8a8882b9013df8cb3746bd8541/a686c9177f3e67097069725239c79f3df8dc5535.jpg",
+				"http://h.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign=462fdee14ec2d562f25dd8ebd721bcd7/7acb0a46f21fbe099474b3956a600c338744ad0d.jpg",
+				"http://img5.imgtn.bdimg.com/it/u=3889276843,4252495472&fm=21&gp=0.jpg",
+				"http://www.qqpk.cn/Article/UploadFiles/201202/20120212114847277.jpg",
+				"http://f.hiphotos.baidu.com/zhidao/wh%3D600%2C800/sign=b11d937b7acb0a468577833f5b53da1c/8326cffc1e178a8204ef0e21f703738da877e864.jpg",
+				"http://img0.imgtn.bdimg.com/it/u=3356092180,388829354&fm=21&gp=0.jpg",
+				"http://img1.3lian.com/gif/more/11/201211/50df7426282374c102d348df75f38659.jpg",
+				"http://www.qqpk.cn/Article/UploadFiles/201111/20111108212457370.jpg",
+				"http://img3.imgtn.bdimg.com/it/u=722916498,1659074121&fm=21&gp=0.jpg",
+				"http://www.2cto.com/uploadfile/2013/0402/20130402081505181.jpg",
+				"http://wenwen.soso.com/p/20100824/20100824210252-26443441.jpg",
+				"http://www.ttoou.com/qqtouxiang/allimg/120906/co120Z6222601-15-lp.jpg",
+				"http://img1.imgtn.bdimg.com/it/u=1358849563,2313233544&fm=21&gp=0.jpg",
+				"http://up.qqjia.com/z/10/tu12060_12.jpg",
+				"http://up.qqjia.com/z/04/tu6183_55.jpg" };
+		// String photoUrl =
+		// "http://img1.imgtn.bdimg.com/it/u=1277545764,1877374477&fm=21&gp=0.jpg";
+		// String photoUrl =
+		// "http://www.33lc.com/article/UploadPic/2012-8/201281010265276953.jpg";
+		for (int i = 0; i < photoUrl.length; i++) {
 			Map<String, String> map = new HashMap<String, String>();
-			map.put("photoUrl", photoUrl);
+			map.put("photoUrl", photoUrl[i]);
 			listData.add(map);
 		}
 	}
@@ -59,6 +84,7 @@ public class FindRadioFragment extends Fragment {
 	private void setupRadioListView() {
 		listAdapter = new RadioListAdapter(activity, listData);
 		radioListView.setAdapter(listAdapter);
+		radioListView.setOnScrollListener(new RadioListScrollListener());
 	}
 
 	private class RadioListAdapter extends BaseAdapter {
@@ -98,29 +124,71 @@ public class FindRadioFragment extends Fragment {
 			} else {
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			RadioModel.loadImage(listData.get(position).get("photoUrl"),
-					new SetHeadPhotoListener(viewHolder.headphotoImageView));
-//			 viewHolder.headphotoImageView.setImageResource(R.drawable.ic_launcher);
+			viewHolder.headphotoImageView.setTag(listData.get(position).get(
+					"photoUrl"));
+			// 消除多次刷新的现象
+			imageLoader.showImage(listData.get(position).get("photoUrl"),
+					viewHolder.headphotoImageView);
 			return convertView;
 		}
 
 		class ViewHolder {
 			public ImageView headphotoImageView;
 		}
+
 	}
 
 	private class SetHeadPhotoListener implements HandleResultListener {
+		private String photoUrl;
 		private ImageView headphotoImageView;
 
-		public SetHeadPhotoListener(ImageView headphotoImageView) {
+		public SetHeadPhotoListener(String photoUrl,
+				ImageView headphotoImageView) {
+			this.photoUrl = photoUrl;
 			this.headphotoImageView = headphotoImageView;
 		}
 
 		@Override
 		public void doResult(Object result) {
 			if (!activity.isFinishing() && !activity.isFinished()) {
-				Bitmap bitmap = (Bitmap) result;
-				headphotoImageView.setImageBitmap(bitmap);
+				if (headphotoImageView.getTag().equals(photoUrl)) {
+					Bitmap bitmap = (Bitmap) result;
+					headphotoImageView.setImageBitmap(bitmap);
+				}
+			}
+		}
+	}
+
+	private class RadioListScrollListener implements OnScrollListener {
+		private int startItem = 0, endItem = 0;
+
+		@Override
+		public void onScroll(AbsListView view, int firstVisibleItem,
+				int visibleItemCount, int totalVisibleItem) {
+			startItem = firstVisibleItem;
+			endItem = firstVisibleItem + visibleItemCount - 1;
+			if (firstFlag && visibleItemCount > 0) {
+				loadVisibleItem(view);
+				firstFlag = false;
+			}
+		}
+
+		@Override
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			if (scrollState == SCROLL_STATE_IDLE) {
+				loadVisibleItem(view);
+			} else {
+				imageLoader.cancelAllTasks();
+			}
+		}
+		
+		private void loadVisibleItem(AbsListView view){
+			for (int i = startItem; i <= endItem; i++) {
+				String photoUrl = listData.get(i).get("photoUrl");
+				ImageView imageView = (ImageView) view
+						.findViewWithTag(photoUrl);
+				imageLoader.loadImage(photoUrl, new SetHeadPhotoListener(
+						photoUrl, imageView));
 			}
 		}
 	}

@@ -5,8 +5,7 @@ import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 
 public class RadioModel {
 	public static void loadImage(String url, HandleResultListener listener) {
-		ImageLoader loader = new ImageLoader(url);
-		loader.setHandleResultListener(listener);
-		loader.execute();
+		ImageLoader loader = new ImageLoader();
+		loader.loadImage(url, listener);
 	}
 }
