@@ -30,24 +30,15 @@ public class ImageLoader {
 		int maxMemory = (int) Runtime.getRuntime().maxMemory();
 		int cacheSize = maxMemory / 10;
 		memoryCaches = new LruCache<String, Bitmap>(cacheSize) {
-			@SuppressLint("NewApi")
 			@Override
 			protected int sizeOf(String key, Bitmap value) {
-				return value.getByteCount();
+				return value.getRowBytes() * value.getHeight();
+				// return value.getByteCount();
 			}
 		};
 	}
 
-	public void showImage(String url, ImageView imageView) {
-		Bitmap bitmap = getBitmapFromMemoryCaches(url);
-		if (bitmap == null) {
-			imageView.setImageResource(R.drawable.ic_launcher);
-		} else {
-			imageView.setImageBitmap(bitmap);
-		}
-	}
-
-	private Bitmap getBitmapFromMemoryCaches(String url) {
+	public Bitmap getBitmapFromMemoryCaches(String url) {
 		return memoryCaches.get(url);
 	}
 

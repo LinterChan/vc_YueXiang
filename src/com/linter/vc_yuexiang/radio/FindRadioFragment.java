@@ -126,8 +126,9 @@ public class FindRadioFragment extends Fragment {
 			}
 			viewHolder.headphotoImageView.setTag(listData.get(position).get(
 					"photoUrl"));
-			// 消除多次刷新的现象
-			imageLoader.showImage(listData.get(position).get("photoUrl"),
+			// 1.首先listview中的item不全部进行图片加载
+			// 2.消除多次刷新的现象,否则会出现滑动后显示listview缓存的图片
+			showImage(listData.get(position).get("photoUrl"),
 					viewHolder.headphotoImageView);
 			return convertView;
 		}
@@ -136,6 +137,15 @@ public class FindRadioFragment extends Fragment {
 			public ImageView headphotoImageView;
 		}
 
+	}
+
+	private void showImage(String url, ImageView imageView) {
+		Bitmap bitmap = imageLoader.getBitmapFromMemoryCaches(url);
+		if (bitmap == null) {
+			imageView.setImageResource(R.drawable.ic_launcher);
+		} else {
+			imageView.setImageBitmap(bitmap);
+		}
 	}
 
 	private class SetHeadPhotoListener implements HandleResultListener {
@@ -181,8 +191,8 @@ public class FindRadioFragment extends Fragment {
 				imageLoader.cancelAllTasks();
 			}
 		}
-		
-		private void loadVisibleItem(AbsListView view){
+
+		private void loadVisibleItem(AbsListView view) {
 			for (int i = startItem; i <= endItem; i++) {
 				String photoUrl = listData.get(i).get("photoUrl");
 				ImageView imageView = (ImageView) view
@@ -190,6 +200,13 @@ public class FindRadioFragment extends Fragment {
 				imageLoader.loadImage(photoUrl, new SetHeadPhotoListener(
 						photoUrl, imageView));
 			}
+		}
+	}
+
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		if (hidden) {
+			imageLoader.cancelAllTasks();
 		}
 	}
 }
