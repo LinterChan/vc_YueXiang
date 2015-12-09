@@ -7,14 +7,11 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
-import android.widget.ImageView;
 
-import com.example.vc_yuexiang.R;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
 
 public class ImageLoader {
