@@ -29,6 +29,7 @@ public class FindRadioFragment extends Fragment {
 	private List<Map<String, String>> listData;
 	private RadioListAdapter listAdapter;
 	private ImageLoader imageLoader = new ImageLoader();
+	private int startItem = 0, endItem = 0;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,7 +171,6 @@ public class FindRadioFragment extends Fragment {
 	}
 
 	private class RadioListScrollListener implements OnScrollListener {
-		private int startItem = 0, endItem = 0;
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem,
@@ -178,7 +178,7 @@ public class FindRadioFragment extends Fragment {
 			startItem = firstVisibleItem;
 			endItem = firstVisibleItem + visibleItemCount - 1;
 			if (firstFlag && visibleItemCount > 0) {
-				loadVisibleItem(view);
+				loadVisibleItem(view, startItem, endItem);
 				firstFlag = false;
 			}
 		}
@@ -186,20 +186,21 @@ public class FindRadioFragment extends Fragment {
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			if (scrollState == SCROLL_STATE_IDLE) {
-				loadVisibleItem(view);
+				loadVisibleItem(view, startItem, endItem);
 			} else {
 				imageLoader.cancelAllTasks();
 			}
 		}
 
-		private void loadVisibleItem(AbsListView view) {
-			for (int i = startItem; i <= endItem; i++) {
-				String photoUrl = listData.get(i).get("photoUrl");
-				ImageView imageView = (ImageView) view
-						.findViewWithTag(photoUrl);
-				imageLoader.loadImage(photoUrl, new SetHeadPhotoListener(
-						photoUrl, imageView));
-			}
+	}
+
+	private void loadVisibleItem(AbsListView view, int startItem, int endItem) {
+		for (int i = startItem; i <= endItem; i++) {
+			String photoUrl = listData.get(i).get("photoUrl");
+			ImageView imageView = (ImageView) view.findViewWithTag(photoUrl);
+			// System.out.println("imageview:"+imageView.getMeasuredWidth()+"*"+imageView.getMeasuredHeight());
+			imageLoader.loadImage(photoUrl, new SetHeadPhotoListener(photoUrl,
+					imageView));
 		}
 	}
 
@@ -207,6 +208,8 @@ public class FindRadioFragment extends Fragment {
 	public void onHiddenChanged(boolean hidden) {
 		if (hidden) {
 			imageLoader.cancelAllTasks();
+		} else {
+			loadVisibleItem(radioListView, startItem, endItem);
 		}
 	}
 }

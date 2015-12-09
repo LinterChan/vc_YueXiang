@@ -24,13 +24,13 @@ public class ImageLoader {
 	}
 
 	private void initMemoryCaches() {
-		int maxMemory = (int) Runtime.getRuntime().maxMemory();
+		int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 		int cacheSize = maxMemory / 10;
 		memoryCaches = new LruCache<String, Bitmap>(cacheSize) {
 			@Override
 			protected int sizeOf(String key, Bitmap value) {
-				return value.getRowBytes() * value.getHeight();
-				// return value.getByteCount();
+				return value.getRowBytes() * value.getHeight() / 1024;
+				// return value.getByteCount()/1024;
 			}
 		};
 	}
@@ -109,6 +109,8 @@ public class ImageLoader {
 			if (listener != null) {
 				listener.doResult(bitmap);
 			}
+			System.out.println("bitmap:" + bitmap.getWidth()
+					+" * "+ bitmap.getHeight());
 			tasks.remove(this);
 		}
 	}
