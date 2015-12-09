@@ -6,7 +6,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Process;
 
 public class PlaySongService extends Service {
 	private MediaPlayer player;
@@ -18,8 +17,6 @@ public class PlaySongService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		initPlayer();
-		int pid = Process.myPid();
-		System.out.println("service pid:"+pid);
 	}
 
 	@Override

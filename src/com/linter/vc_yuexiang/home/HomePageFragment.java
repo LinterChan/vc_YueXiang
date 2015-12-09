@@ -65,7 +65,7 @@ public class HomePageFragment extends LazyFragment {
 		initView(view);
 
 		isPrepaerd = true;
-		setupSongList();
+		// setupSongList();
 		lazyLoad();
 		initUpdateUIListener();
 		setupPlaySongButton();
@@ -164,14 +164,28 @@ public class HomePageFragment extends LazyFragment {
 			e.printStackTrace();
 		}
 		// 测试
-		// String[] testUrl = new String[] {
-		// "http://img1.imgtn.bdimg.com/it/u=1277545764,1877374477&fm=21&gp=0.jpg",
+		// final String[] testUrl = new String[] {
+		// "http://a.hiphotos.baidu.com/zhidao/pic/item/faedab64034f78f0c76f6bd97b310a55b3191cb7.jpg",
 		// "http://www.33lc.com/article/UploadPic/2012-8/201281010265276953.jpg",
 		// "http://hiphotos.baidu.com/90008com/pic/item/fdaef1ea2eea7ff3d539c904.jpeg"
 		// };
-		// HomeModel.loadImage(testUrl[i], new SetBackgroundListener());
-		HomeModel
-				.loadImage(songInfo.getImageUrl(), new SetBackgroundListener());
+		// backgroundImageView.post(new Runnable() {
+		// @Override
+		// public void run() {
+		// HomeModel.loadImage(testUrl[i], backgroundImageView.getWidth(),
+		// backgroundImageView.getHeight(),
+		// new SetBackgroundListener());
+		// }
+		// });
+		backgroundImageView.post(new Runnable() {
+			@Override
+			public void run() {
+				HomeModel.loadImage(songInfo.getImageUrl(),
+						backgroundImageView.getWidth(),
+						backgroundImageView.getHeight(),
+						new SetBackgroundListener());
+			}
+		});
 		songSeekBar.setMax(player.getDuration() / 1000);
 	}
 
@@ -185,6 +199,8 @@ public class HomePageFragment extends LazyFragment {
 			if (!activity.isFinishing() && !activity.isFinished()) {
 				Bitmap bitmap = (Bitmap) result;
 				backgroundImageView.setImageBitmap(bitmap);
+				System.out.println("bitmap:" + bitmap.getWidth() + "*"
+						+ bitmap.getHeight());
 			}
 		}
 	}

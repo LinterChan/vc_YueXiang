@@ -45,12 +45,13 @@ public class ImageLoader {
 		}
 	}
 
-	public void loadImage(String url, HandleResultListener listener) {
+	public void loadImage(String url, int reqWidth, int reqHeight,
+			HandleResultListener listener) {
 		Bitmap bitmap = getBitmapFromMemoryCaches(url);
 		if (bitmap == null) {
 			LoadImageTask loadImageTask = new LoadImageTask(url, listener);
 			tasks.add(loadImageTask);
-			loadImageTask.execute();
+			loadImageTask.execute(reqWidth, reqHeight);
 		} else {
 			if (listener != null) {
 				listener.doResult(bitmap);
@@ -58,8 +59,11 @@ public class ImageLoader {
 		}
 	}
 
-	private static Bitmap getBitmapFromUrl(String str_url) {
+	private static Bitmap getBitmapFromUrlWithCompressed(String str_url,
+			int reqWidth, int reqHeight) {
 		Bitmap bitmap = null;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
 		URL url = null;
 		try {
 			url = new URL(str_url);
@@ -68,13 +72,40 @@ public class ImageLoader {
 			InputStream is = null;
 			is = conn.getInputStream();
 			BufferedInputStream bis = new BufferedInputStream(is);
-			bitmap = BitmapFactory.decodeStream(bis);
+			BitmapFactory.decodeStream(bis, null, options);
+
+			options.inSampleSize = calculateInSampleSize(options, reqWidth,
+					reqHeight);
+			options.inJustDecodeBounds = false;
+
+			conn = (HttpURLConnection) url.openConnection();
+			is = conn.getInputStream();
+			bis = new BufferedInputStream(is);
+			bitmap = BitmapFactory.decodeStream(bis, null, options);
+			
+			conn.disconnect();
 			is.close();
 			bis.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bitmap;
+	}
+
+	private static int calculateInSampleSize(BitmapFactory.Options options,
+			int reqWidth, int reqHeight) {
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+//		System.out.println("options:"+width+"*"+height);
+		int inSampleSize = 1;
+		if (height > reqHeight || width > reqWidth) {
+			final int heightRate = Math.round((float) height
+					/ (float) reqHeight);
+			final int widthRate = Math.round((float) width / (float) reqWidth);
+			inSampleSize = heightRate < widthRate ? heightRate : widthRate;
+		}
+		System.out.println("inSampleSize:"+inSampleSize);
+		return inSampleSize;
 	}
 
 	public void cancelAllTasks() {
@@ -85,7 +116,7 @@ public class ImageLoader {
 		}
 	}
 
-	private class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
+	private class LoadImageTask extends AsyncTask<Integer, Void, Bitmap> {
 		private String url;
 		private HandleResultListener listener;
 
@@ -95,8 +126,9 @@ public class ImageLoader {
 		}
 
 		@Override
-		protected Bitmap doInBackground(Void... params) {
-			Bitmap bitmap = getBitmapFromUrl(url);
+		protected Bitmap doInBackground(Integer... params) {
+			Bitmap bitmap = getBitmapFromUrlWithCompressed(url, params[0],
+					params[1]);
 			if (bitmap != null) {
 				addBitmapToMemoryCaches(url, bitmap);
 			}
@@ -109,8 +141,6 @@ public class ImageLoader {
 			if (listener != null) {
 				listener.doResult(bitmap);
 			}
-			System.out.println("bitmap:" + bitmap.getWidth()
-					+" * "+ bitmap.getHeight());
 			tasks.remove(this);
 		}
 	}

@@ -198,9 +198,10 @@ public class FindRadioFragment extends Fragment {
 		for (int i = startItem; i <= endItem; i++) {
 			String photoUrl = listData.get(i).get("photoUrl");
 			ImageView imageView = (ImageView) view.findViewWithTag(photoUrl);
-			// System.out.println("imageview:"+imageView.getMeasuredWidth()+"*"+imageView.getMeasuredHeight());
-			imageLoader.loadImage(photoUrl, new SetHeadPhotoListener(photoUrl,
-					imageView));
+			imageLoader
+					.loadImage(photoUrl, imageView.getWidth(), imageView
+							.getHeight(), new SetHeadPhotoListener(photoUrl,
+							imageView));
 		}
 	}
 

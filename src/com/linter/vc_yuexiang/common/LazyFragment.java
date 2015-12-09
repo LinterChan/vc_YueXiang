@@ -8,7 +8,6 @@ public abstract class LazyFragment extends Fragment {
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
-		System.out.println("setUserVisibleHint");
 		isVisible = isVisibleToUser;
 		if (isVisibleToUser) {
 			lazyLoad();

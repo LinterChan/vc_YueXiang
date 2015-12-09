@@ -27,9 +27,10 @@ public class HomeModel {
 		return map;
 	}
 
-	public static void loadImage(String url, HandleResultListener listener) {
+	public static void loadImage(String url, int reqWidth, int reqHeight,
+			HandleResultListener listener) {
 		ImageLoader loader = new ImageLoader();
-		loader.loadImage(url, listener);
+		loader.loadImage(url, reqWidth, reqHeight, listener);
 	}
 
 	public static void loveSong(String sid, String username,

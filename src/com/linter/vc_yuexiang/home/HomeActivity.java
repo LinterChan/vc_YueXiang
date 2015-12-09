@@ -13,7 +13,6 @@ import android.content.ServiceConnection;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Process;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -49,8 +48,6 @@ public class HomeActivity extends BaseActivity {
 		initView();
 
 		setupViewPager();
-		int pid = Process.myPid();
-		System.out.println("Activity pid:"+pid);
 	}
 
 	@Override
