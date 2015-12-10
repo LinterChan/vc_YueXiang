@@ -25,7 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.login.LoginActivity;
 import com.linter.vc_yuexiang.register.RegisterActivity;

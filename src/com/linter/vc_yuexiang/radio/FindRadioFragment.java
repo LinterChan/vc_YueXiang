@@ -18,9 +18,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
-import com.linter.vc_yuexiang.http.ImageLoader;
+import com.linter.vc_yuexiang.loadimage.ImageLoader;
 
 public class FindRadioFragment extends Fragment {
 	private boolean firstFlag = true;
@@ -28,7 +28,7 @@ public class FindRadioFragment extends Fragment {
 	private ListView radioListView;
 	private List<Map<String, String>> listData;
 	private RadioListAdapter listAdapter;
-	private ImageLoader imageLoader = new ImageLoader();
+	private ImageLoader imageLoader;
 	private int startItem = 0, endItem = 0;
 
 	@Override
@@ -37,6 +37,7 @@ public class FindRadioFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_findradio, container,
 				false);
 		getParentActivity();
+		initImageLoader();
 		initListData();
 		initView(view);
 		setupRadioListView();
@@ -80,6 +81,10 @@ public class FindRadioFragment extends Fragment {
 			map.put("photoUrl", photoUrl[i]);
 			listData.add(map);
 		}
+	}
+
+	private void initImageLoader() {
+		imageLoader = new ImageLoader(activity);
 	}
 
 	private void setupRadioListView() {
@@ -141,7 +146,7 @@ public class FindRadioFragment extends Fragment {
 	}
 
 	private void showImage(String url, ImageView imageView) {
-		Bitmap bitmap = imageLoader.getBitmapFromMemoryCaches(url);
+		Bitmap bitmap = imageLoader.getBitmapFromCaches(url);
 		if (bitmap == null) {
 			imageView.setImageResource(R.drawable.ic_launcher);
 		} else {

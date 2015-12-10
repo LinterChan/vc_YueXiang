@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import com.linter.vc_yuexiang.common.SongInfo;
 import com.linter.vc_yuexiang.http.HttpClientUtil;
 import com.linter.vc_yuexiang.http.HttpRequestHelper;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
-import com.linter.vc_yuexiang.http.ImageLoader;
+import com.linter.vc_yuexiang.loadimage.ImageLoader;
 
 public class HomeModel {
 	public static void getSongDataFromServer(int i,
@@ -27,9 +29,9 @@ public class HomeModel {
 		return map;
 	}
 
-	public static void loadImage(String url, int reqWidth, int reqHeight,
-			HandleResultListener listener) {
-		ImageLoader loader = new ImageLoader();
+	public static void loadImage(Context context, String url, int reqWidth,
+			int reqHeight, HandleResultListener listener) {
+		ImageLoader loader = new ImageLoader(context);
 		loader.loadImage(url, reqWidth, reqHeight, listener);
 	}
 

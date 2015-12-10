@@ -9,12 +9,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.common.ResultConst;
 import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
+import com.linter.vc_yuexiang.common.network.NetworkConnDetector;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
-import com.linter.vc_yuexiang.network.NetworkConnDetector;
 import com.linter.vc_yuexiang.register.RegisterModel.CorrectnessListener;
 
 /**

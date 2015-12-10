@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.BaseActivity;
 import com.linter.vc_yuexiang.common.DensityUtil;
 

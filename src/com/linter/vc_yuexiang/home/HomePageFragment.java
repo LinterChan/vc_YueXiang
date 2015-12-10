@@ -16,13 +16,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 import com.linter.vc_yuexiang.common.LazyFragment;
 import com.linter.vc_yuexiang.common.SharedPreferenceUtil;
 import com.linter.vc_yuexiang.common.SongInfo;
+import com.linter.vc_yuexiang.common.network.NetworkConnDetector;
 import com.linter.vc_yuexiang.home.PlaySongService.OnStopSongListener;
 import com.linter.vc_yuexiang.http.HttpRequestHelper.HandleResultListener;
-import com.linter.vc_yuexiang.network.NetworkConnDetector;
 
 /**
  * 实现： 1.使用懒加载实现滑动到某页加载数据的功能 2.使用bindService开启服务 3.使用回调实现Activity和Service的交互
@@ -180,7 +180,7 @@ public class HomePageFragment extends LazyFragment {
 		backgroundImageView.post(new Runnable() {
 			@Override
 			public void run() {
-				HomeModel.loadImage(songInfo.getImageUrl(),
+				HomeModel.loadImage(activity, songInfo.getImageUrl(),
 						backgroundImageView.getWidth(),
 						backgroundImageView.getHeight(),
 						new SetBackgroundListener());

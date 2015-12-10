@@ -1,4 +1,4 @@
-package com.linter.vc_yuexiang.network;
+package com.linter.vc_yuexiang.common.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

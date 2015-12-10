@@ -1,6 +1,6 @@
 package com.linter.vc_yuexiang.radio;
 
-import com.example.vc_yuexiang.R;
+import com.linter.vc_yuexiang.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
